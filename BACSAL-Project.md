@@ -5,7 +5,7 @@ Try executing this chunk by clicking the *Run* button within the chunk
 or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
 
 ``` r
-plot(cars) 
+plot(iris3) 
 ```
 
 ![](BACSAL-Project_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
