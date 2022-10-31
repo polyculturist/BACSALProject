@@ -370,27 +370,13 @@ library(tidyverse)</code></pre>
 <p>Importing BACSAL data set</p>
 <pre class="r"><code>library(readr)
 bsdata &lt;- read_csv(&quot;complete_BACSAL_data.csv&quot;, show_col_types = F)
-View(bsdata)</code></pre>
+view(bsdata)</code></pre>
 <p>Creating &amp; converting variables</p>
 <p>Root-shoot ratio (the ratio of root dry biomass over shoot dry
 biomass)</p>
 <pre class="r"><code>bsdata %&gt;% 
   select(`Root Mass (g)`, `Shoot mass (g)`) %&gt;% 
   mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)</code></pre>
-<pre><code>## # A tibble: 95 × 3
-##    `Root Mass (g)` `Shoot mass (g)`    rts
-##              &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt;
-##  1           0.278           0.934   0.298
-##  2           0.144           0.307   0.468
-##  3           0.277           0.162   1.71 
-##  4           0.208           0.571   0.364
-##  5           0.242           0.142   1.71 
-##  6           0.117           0.358   0.327
-##  7           0.433           0.267   1.62 
-##  8           0.138           0.584   0.236
-##  9          NA               0.0833 NA    
-## 10           0.200           0.329   0.609
-## # … with 85 more rows</code></pre>
 
 
 
