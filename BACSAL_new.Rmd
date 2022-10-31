@@ -18,7 +18,7 @@ library(tidyverse)
 
 library(readr)
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
-view(bsdata)
+head(bsdata)
 
 ```
 
