@@ -5,9 +5,7 @@ date: "2022-10-31"
 output: html_document
 ---
 ```{r}
-plot(iris3)
+plot(iris) 
 ```
+Lets gooooo!
 
-## R Markdown
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
