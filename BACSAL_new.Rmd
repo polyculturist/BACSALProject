@@ -10,7 +10,7 @@ Importing BACSAL data set
 ```{r}
 
 library(readr)
-Compiled_master_repaired <- read_csv("Compiled_master_repaired.csv", show_col_types = F)
+bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 head(Compiled_master_repaired)
 
 ```
