@@ -4,7 +4,7 @@ author: "migs"
 date: "2022-10-31"
 output: html_document
 ---
-Loading packages
+## Loading packages
 ```{r, echo = T, message=FALSE}
 library(ggplot2)
 library(magrittr)
@@ -13,7 +13,7 @@ library(tidyverse)
 
 
 
-Importing BACSAL data set
+## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
 
 library(readr)
@@ -22,7 +22,7 @@ view(bsdata)
 
 ```
 
-Creating & converting variables
+## Creating & converting variables
 
 Root-shoot ratio (the ratio of root dry biomass over shoot dry biomass)
 ```{r, echo = T, results='hide'}
