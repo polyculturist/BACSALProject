@@ -19,7 +19,7 @@ Importing BACSAL data set
 
 library(readr)
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
-View(Compiled_master_repaired)
+View(bsdata)
 
 ```
 
