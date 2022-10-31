@@ -363,20 +363,26 @@ pre code {
 </div>
 
 
-<p>Loading packages</p>
+<div id="loading-packages" class="section level2">
+<h2>Loading packages</h2>
 <pre class="r"><code>library(ggplot2)
 library(magrittr)
 library(tidyverse)</code></pre>
-<p>Importing BACSAL data set</p>
+</div>
+<div id="importing-bacsal-data-set" class="section level2">
+<h2>Importing BACSAL data set</h2>
 <pre class="r"><code>library(readr)
 bsdata &lt;- read_csv(&quot;complete_BACSAL_data.csv&quot;, show_col_types = F)
 view(bsdata)</code></pre>
-<p>Creating &amp; converting variables</p>
+</div>
+<div id="creating-converting-variables" class="section level2">
+<h2>Creating &amp; converting variables</h2>
 <p>Root-shoot ratio (the ratio of root dry biomass over shoot dry
 biomass)</p>
 <pre class="r"><code>bsdata %&gt;% 
   select(`Root Mass (g)`, `Shoot mass (g)`) %&gt;% 
   mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)</code></pre>
+</div>
 
 
 
