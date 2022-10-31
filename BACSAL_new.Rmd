@@ -14,18 +14,18 @@ library(tidyverse)
 
 
 Importing BACSAL data set
-```{r}
+```{r, echo=T, results='markdown'}
 
 library(readr)
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
-View(bsdata)
+view(bsdata)
 
 ```
 
 Creating & converting variables
 
 Root-shoot ratio (the ratio of root dry biomass over shoot dry biomass)
-```{r, echo = T, results='markdown'}
+```{r, echo = T, results='hide'}
 bsdata %>% 
   select(`Root Mass (g)`, `Shoot mass (g)`) %>% 
   mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
