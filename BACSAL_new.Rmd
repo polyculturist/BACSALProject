@@ -49,9 +49,15 @@ bsdata %>%
   select(Code, `SurfArea(cm2)`, `Root Mass (g)`) %>% 
   mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
 
-
 ```
 
+Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
+Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless)
+```{r, echo = T, results='hide'}
+bsdata %>% 
+  select(Code, '0<.L.<=0.5000000')
+
+```
 
 
 
