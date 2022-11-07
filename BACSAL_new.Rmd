@@ -24,19 +24,33 @@ head(bsdata)
 
 ## Creating & converting variables
 
-Root-shoot ratio (the ratio of root dry biomass over shoot dry biomass)
+Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
+Note: Mou et al. 2013 uses rts, has no units (dimensionless)
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(`Root Mass (g)`, `Shoot mass (g)`) %>% 
+  select(Code, `Root Mass (g)`, `Shoot mass (g)`) %>% 
   mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
 
 ```
 
-
-```{r}
+Specific Root Length (SRL) - root length divided by root dry mass
+Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 uses units (m/g). Will use KW units.
+```{r, echo = T, results='hide'}
+bsdata %>% 
+  select(Code, `Length(cm)`, `Root Mass (g)`) %>% 
+  mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)` )
 
 ```
 
+Specific Root Area (SRA) -root area divided by dry root mass
+Note: Sun et al. 2020 uses units (cm^2 / g)
+```{r, echo = T, results='hide'}
+bsdata %>% 
+  select(Code, `SurfArea(cm2)`, `Root Mass (g)`) %>% 
+  mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
+
+
+```
 
 
 
