@@ -15,7 +15,6 @@ library(tidyverse)
 
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
-
 library(readr)
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 head(bsdata)
