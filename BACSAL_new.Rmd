@@ -56,15 +56,18 @@ Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
 Yaxis - root length total (log transformed?)
 Group by sites (biggest source of variance), take means, and add add error bars
 ```{r, echo = T, results='show'}
+#Reorganizing root data into one data frame
+# bsdata <- structure(list(diamclass = c('0<.L.<=0.5000000', '0.5000000<.L.<=1.0000000')), .Names = c('diamclass', 'rlength'), class = 'data.frame')
+
 bsdata %>% 
   select(Code, Origin, Treatment, 
         '0<.L.<=0.5000000', 
         '0.5000000<.L.<=1.0000000',
         `RootVolume(cm3)`,
         `Root Mass (g)`
-        ) %>% 
-  ggplot(aes(x =  `RootVolume(cm3)`, y = `Root Mass (g)`)) +
-    geom_line()
+        ) %>%
+  ggplot(aes(x = log(`Root Mass (g)`), color = Origin)) +
+    geom_density()
 
 ```
 
