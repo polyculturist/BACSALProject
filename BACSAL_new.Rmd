@@ -50,9 +50,21 @@ bsdata %>%
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
 Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
 Update Note: Maybe showing root histograms? ie, length? would be logarithmic, orders of magnitude are too greatly varied between <.5 mm and >4.5 mm
-```{r, echo = T, results='hide'}
+
+Creating histogram: 
+Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
+Yaxis - root length total (log transformed?)
+Group by sites (biggest source of variance), take means, and add add error bars
+```{r, echo = T, results='show'}
 bsdata %>% 
-  select(Code, '0<.L.<=0.5000000')
+  select(Code, Origin, Treatment, 
+        '0<.L.<=0.5000000', 
+        '0.5000000<.L.<=1.0000000',
+        `RootVolume(cm3)`,
+        `Root Mass (g)`
+        ) %>% 
+  ggplot(aes(x =  `RootVolume(cm3)`, y = `Root Mass (g)`)) +
+    geom_line()
 
 ```
 
