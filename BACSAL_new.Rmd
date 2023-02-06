@@ -12,7 +12,6 @@ library(tidyverse)
 ```
 
 
-
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
 library(readr)
