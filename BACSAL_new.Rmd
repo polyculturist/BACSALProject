@@ -28,7 +28,6 @@ Note: Mou et al. 2013 uses rts, has no units (dimensionless)
 bsdata %>% 
   select(Code, `Root Mass (g)`, `Shoot mass (g)`) %>% 
   mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
-
 ```
 
 Specific Root Length (SRL) - root length divided by root dry mass
