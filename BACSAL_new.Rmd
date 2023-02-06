@@ -48,7 +48,8 @@ bsdata %>%
 ```
 
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
-Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless)
+Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
+Update Note: Maybe showing root histograms? ie, length? would be logarithmic, orders of magnitude are too greatly varied between <.5 mm and >4.5 mm
 ```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, '0<.L.<=0.5000000')
