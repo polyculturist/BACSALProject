@@ -23,10 +23,27 @@ head(bsdata)
 
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
-```{r, echo = T, results='hide'}
+--by Nitrogen--
+```{r, echo = T, results='show'}
 bsdata %>% 
-  select(Code, `Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
+  select(Code, Origin, Treatment, Water, Nitrogen, `Root Mass (g)`, `Shoot mass (g)`) %>% 
+  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  ggplot() +
+    aes(x = Origin, y = rts, fill = Nitrogen) +
+    geom_boxplot() +
+    ggtitle("Root-shoot ratio. grouped by Nitrogen") +
+    labs(y = "Root-to-Shoot")
+```
+--by Origin--
+```{r, echo = T, results='show'}
+bsdata %>% 
+  select(Origin, `Root Mass (g)`, `Shoot mass (g)`) %>% 
+  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  ggplot() +
+    aes(x = Origin, y = rts, fill = Origin) +
+    geom_boxplot() +
+    ggtitle("Root-shoot ratio, grouped by Origin") +
+    labs(y = "Root-to-Shoot")
 ```
 
 Specific Root Length (SRL) - root length divided by root dry mass
@@ -47,6 +64,35 @@ bsdata %>%
 
 ```
 
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UNFINISHED WORK BELOW
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
 Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
 Update Note: Maybe showing root histograms? ie, length? would be logarithmic, orders of magnitude are too greatly varied between <.5 mm and >4.5 mm
@@ -55,7 +101,7 @@ Creating histogram:
 Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
 Yaxis - root length total (log transformed?)
 Group by sites (biggest source of variance), take means, and add add error bars
-```{r, echo = T, results='show'}
+```{r, echo = T, results='hide'}
 #Reorganizing root data into one data frame
 # bsdata <- structure(list(diamclass = c('0<.L.<=0.5000000', '0.5000000<.L.<=1.0000000')), .Names = c('diamclass', 'rlength'), class = 'data.frame')
 
