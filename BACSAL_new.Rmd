@@ -40,8 +40,8 @@ Note: Kramer-Walter et al. 2016 uses mg/mm^3
 
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(Code, `Root Mass (g)`, `RootVolume(cm3)`)
-#.........
+  select(Code, `Root Mass (g)`, `RootVolume(cm3)`) %>% 
+  mutate(rtd = ((`Root Mass (g)`*1000)/(`RootVolume(cm3)`*1000)))
 ```
 
 
