@@ -34,8 +34,18 @@ Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 use
 bsdata %>% 
   select(Code, `Length(cm)`, `Root Mass (g)`) %>% 
   mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)` )
-
 ```
+Root Tissue Density (RTD) - root mass/root volume
+Note: Kramer-Walter et al. 2016 uses mg/mm^3
+
+```{r, echo = T, results='hide'}
+bsdata %>% 
+  select(Code, `Root Mass (g)`, `RootVolume(cm3)`)
+#.........
+```
+
+
+
 
 Specific Root Area (SRA) -root area divided by dry root mass
 Note: Sun et al. 2020 uses units (cm^2 / g)
@@ -45,13 +55,18 @@ bsdata %>%
   mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
 ```
 Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3)
-```{r}
+```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>% 
   mutate(volrgr = (((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10))))
 ```
 
-
+RGR, according to Kramer-Walter et al. 2016 (t = 35 days)
+```{r, echo = T, results='hide'}
+bsdata %>% 
+  select(Code, i.height, f.height) %>% 
+  mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35)
+```
 
 
 
@@ -104,8 +119,52 @@ bsdata %>%
     labs(y = "Root-to-Shoot")
 ```
 
-According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species"
+According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
+Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3)
+```{r, echo = T, results='show'}
+#Root volume vs. specific root area (sra)
+bsdata %>% 
+  select(Code, Origin, `SurfArea(cm2)`, Origin, `Root Mass (g)`, `RootVolume(cm3)`) %>% 
+  mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`) %>% 
+  ggplot() +
+    aes(x = sra, y = `RootVolume(cm3)`, color = Origin) +
+    geom_point(na.rm = T) +
+    scale_x_continuous(limits = c(0,1800)) +
+    scale_y_continuous(limits = c(0,36))
+```
+```{r, echo = T, results='show'}
+#RGR vs. root diameter
+bsdata %>% 
+  select(Code, `AvgDiam(mm)`, Origin, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%
+  mutate(logvolrgr = log((((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10))))) %>% 
+  ggplot() +
+    aes(x = `AvgDiam(mm)`, y = logvolrgr, color = Origin) +
+    geom_jitter(na.rm = T) +
+    scale_x_continuous(limits = c(0.3, 1.3))
+```
+Kramer-Walter et al. 2016 uses bivariate comparisons between RGR and various root traits
+```{r, echo = T, results='show'}
+#RGR vs. KWrgr
+bsdata %>% 
+  select(Code, `AvgDiam(mm)`, Origin, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%
+ mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35) %>% 
+  ggplot() +
+    aes(x = `AvgDiam(mm)`, y = kwrgr, color = Origin) +
+    geom_jitter(na.rm = T)
+```
 
+
+```{r, echo = T, results='show'}
+#KWRGR vs. SRL
+bsdata %>% 
+  select(Code, `Length(cm)`, `Root Mass (g)`, Origin, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%
+  mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35) %>% 
+  mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)` ) %>% 
+  ggplot() +
+    aes(x = srl, y = kwrgr, color = Origin) +
+    geom_smooth(na.rm = T) +
+    scale_x_continuous(limits = c(0,100))
+```
 
 
 
