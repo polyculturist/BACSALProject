@@ -23,29 +23,11 @@ head(bsdata)
 
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
---by Nitrogen--
-```{r, echo = T, results='show'}
+```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(Code, Origin, Treatment, Water, Nitrogen, `Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
-  ggplot() +
-    aes(x = Origin, y = rts, fill = Nitrogen) +
-    geom_boxplot() +
-    ggtitle("Root-shoot ratio. grouped by Nitrogen") +
-    labs(y = "Root-to-Shoot")
+  select(`Root Mass (g)`, `Shoot mass (g)`) %>% 
+  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
 ```
---by Origin--
-```{r, echo = T, results='show'}
-bsdata %>% 
-  select(Origin, `Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
-  ggplot() +
-    aes(x = Origin, y = rts, fill = Origin) +
-    geom_boxplot() +
-    ggtitle("Root-shoot ratio, grouped by Origin") +
-    labs(y = "Root-to-Shoot")
-```
-
 Specific Root Length (SRL) - root length divided by root dry mass
 Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 uses units (m/g). Will use KW units.
 ```{r, echo = T, results='hide'}
@@ -61,31 +43,13 @@ Note: Sun et al. 2020 uses units (cm^2 / g)
 bsdata %>% 
   select(Code, `SurfArea(cm2)`, `Root Mass (g)`) %>% 
   mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
-
 ```
-
+Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3)
 ```{r}
-
+bsdata %>% 
+  select(Code, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>% 
+  mutate(volrgr = (((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10))))
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -116,11 +80,31 @@ bsdata %>%
     geom_density()
 
 ```
+Root-shoot ratio, by Nitrogen
+```{r, echo = T, results='show'}
+bsdata %>% 
+  select(Code, Origin, Treatment, Water, Nitrogen, `Root Mass (g)`, `Shoot mass (g)`) %>% 
+  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  ggplot() +
+    aes(x = Origin, y = rts, fill = Nitrogen) +
+    geom_boxplot() +
+    ggtitle("Root-shoot ratio, grouped by Nitrogen") +
+    labs(y = "Root-to-Shoot")
+```
 
+Root-shoot ratio, by Origin
+```{r, echo = T, results='show'}
+bsdata %>% 
+  select(Origin, `Root Mass (g)`, `Shoot mass (g)`) %>% 
+  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  ggplot() +
+    aes(x = Origin, y = rts, fill = Origin) +
+    geom_boxplot() +
+    ggtitle("Root-shoot ratio, grouped by Origin") +
+    labs(y = "Root-to-Shoot")
+```
 
-
-
-
+According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species"
 
 
 
