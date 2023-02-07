@@ -144,7 +144,7 @@ bsdata %>%
 ```
 Kramer-Walter et al. 2016 uses bivariate comparisons between RGR and various root traits
 ```{r, echo = T, results='show'}
-#RGR vs. KWrgr
+#KWrgr vs. AvgDiam
 bsdata %>% 
   select(Code, `AvgDiam(mm)`, Origin, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%
  mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35) %>% 
@@ -167,7 +167,16 @@ bsdata %>%
 ```
 
 
-
+```{r, echo = T, results='show'}
+#KWrgr vs. RTD
+bsdata %>% 
+  select(Code, `Root Mass (g)`, `RootVolume(cm3)`, `Root Mass (g)`, Origin, f.height, i.height) %>% 
+  mutate(rtd = ((`Root Mass (g)`*1000)/(`RootVolume(cm3)`*1000))) %>%
+  mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35) %>% 
+  ggplot() +
+    aes(x = rtd, y = kwrgr, color = Origin) +
+    geom_point(na.rm = T)
+```
 
 
 
