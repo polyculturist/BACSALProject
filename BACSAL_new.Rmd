@@ -162,7 +162,7 @@ bsdata %>%
   mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)` ) %>% 
   ggplot() +
     aes(x = srl, y = kwrgr, color = Origin) +
-    geom_smooth(na.rm = T) +
+    geom_point(na.rm = T) +
     scale_x_continuous(limits = c(0,100))
 ```
 
