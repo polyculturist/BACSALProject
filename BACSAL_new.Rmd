@@ -216,7 +216,7 @@ bsdatacat %>%
     ggplot() +
     aes(x = Lcategory, y = log(LengthCat+1), fill = Origin) +
     geom_boxplot() 
-
+# Box-Cox plot might be helpful!
 ```
 
 
