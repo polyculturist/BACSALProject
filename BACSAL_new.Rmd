@@ -19,6 +19,24 @@ bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 head(bsdata)
 ```
 
+## Renaming long column names
+```{r}
+bsdata <- bsdata %>% 
+  rename(L01 = `0<.L.<=0.5000000`,
+         L02 = `0.5000000<.L.<=1.0000000`,
+         L03 = `1.0000000<.L.<=1.5000000`,
+         L04 = `1.5000000<.L.<=2.0000000`,
+         L05 = `1.5000000<.L.<=2.0000000`,
+         L06 = `2.0000000<.L.<=2.5000000`,
+         L07 = `2.5000000<.L.<=3.0000000`,
+         L08 = `3.0000000<.L.<=3.5000000`,
+         L09 = `3.5000000<.L.<=4.0000000`,
+         L10 = `4.0000000<.L.<=4.5000000`,
+         L11 = `.L.>4.5000000`)
+```
+
+
+
 ## Creating & converting variables
 
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
@@ -177,6 +195,41 @@ bsdata %>%
     aes(x = rtd, y = kwrgr, color = Origin) +
     geom_point(na.rm = T)
 ```
+
+#After D-Lab meeting, 2/9/23
+```{r}
+bsdata %>% 
+  select(Code, Origin, `0<.L.<=0.5000000`, )
+
+
+```
+
+
+
+
+
+```{r}
+bsdatacat <- bsdata %>% 
+  pivot_longer(L01:L11, names_to = 'Lcategory', values_to = 'LengthCat')
+
+bsdatacat %>% 
+    ggplot() +
+    aes(x = Lcategory, y = log(LengthCat+1), fill = Origin) +
+    geom_boxplot() 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
