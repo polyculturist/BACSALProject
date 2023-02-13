@@ -196,7 +196,7 @@ bsdata %>%
     geom_point(na.rm = T)
 ```
 
-#After D-Lab meeting, 2/9/23
+#After D-Lab consultation, 2/9/23
 ```{r}
 bsdata %>% 
   select(Code, Origin, `0<.L.<=0.5000000`, )
