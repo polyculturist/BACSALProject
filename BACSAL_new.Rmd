@@ -20,7 +20,7 @@ head(bsdata)
 ```
 
 ## Renaming long column names
-```{r}
+```{r, echo=T, results = 'hide'}
 bsdata <- bsdata %>% 
   rename(L01 = `0<.L.<=0.5000000`,
          L02 = `0.5000000<.L.<=1.0000000`,
@@ -51,7 +51,7 @@ Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 use
 ```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, `Length(cm)`, `Root Mass (g)`) %>% 
-  mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)` )
+  mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)`)
 ```
 Root Tissue Density (RTD) - root mass/root volume
 Note: Kramer-Walter et al. 2016 uses mg/mm^3
@@ -62,9 +62,6 @@ bsdata %>%
   mutate(rtd = ((`Root Mass (g)`*1000)/(`RootVolume(cm3)`*1000)))
 ```
 
-
-
-
 Specific Root Area (SRA) -root area divided by dry root mass
 Note: Sun et al. 2020 uses units (cm^2 / g)
 ```{r, echo = T, results='hide'}
@@ -72,12 +69,12 @@ bsdata %>%
   select(Code, `SurfArea(cm2)`, `Root Mass (g)`) %>% 
   mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
 ```
-Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3)
-```{r, echo = T, results='hide'}
-bsdata %>% 
-  select(Code, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>% 
-  mutate(volrgr = (((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10))))
-```
+<!-- Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3) -->
+<!-- ```{r, echo = T, results='hide'} -->
+<!--  bsdata %>%  -->
+<!--    select(Code, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%  -->
+<!--    mutate(volrgr = (((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10)))) -->
+<!-- ``` -->
 
 RGR, according to Kramer-Walter et al. 2016 (t = 35 days)
 ```{r, echo = T, results='hide'}
@@ -85,8 +82,6 @@ bsdata %>%
   select(Code, i.height, f.height) %>% 
   mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35)
 ```
-
-
 
 
 UNFINISHED WORK BELOW
@@ -98,21 +93,22 @@ Creating histogram:
 Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
 Yaxis - root length total (log transformed?)
 Group by sites (biggest source of variance), take means, and add add error bars
-```{r, echo = T, results='hide'}
-#Reorganizing root data into one data frame
-# bsdata <- structure(list(diamclass = c('0<.L.<=0.5000000', '0.5000000<.L.<=1.0000000')), .Names = c('diamclass', 'rlength'), class = 'data.frame')
+# ```{r, echo = T, results='hide'}
+# #Reorganizing root data into one data frame
+# # bsdata <- structure(list(diamclass = c('0<.L.<=0.5000000', '0.5000000<.L.<=1.0000000')), .Names = c('diamclass', 'rlength'), class = 'data.frame')
+# 
+# bsdata %>% 
+#   select(Code, Origin, Treatment, 
+#         '0<.L.<=0.5000000', 
+#         '0.5000000<.L.<=1.0000000',
+#         `RootVolume(cm3)`,
+#         `Root Mass (g)`
+#         ) %>%
+#   ggplot(aes(x = log(`Root Mass (g)`), color = Origin)) +
+#     geom_density()
+# 
+# ```
 
-bsdata %>% 
-  select(Code, Origin, Treatment, 
-        '0<.L.<=0.5000000', 
-        '0.5000000<.L.<=1.0000000',
-        `RootVolume(cm3)`,
-        `Root Mass (g)`
-        ) %>%
-  ggplot(aes(x = log(`Root Mass (g)`), color = Origin)) +
-    geom_density()
-
-```
 Root-shoot ratio, by Nitrogen
 ```{r, echo = T, results='show'}
 bsdata %>% 
@@ -196,13 +192,13 @@ bsdata %>%
     geom_point(na.rm = T)
 ```
 
-#After D-Lab consultation, 2/9/23
-```{r}
-bsdata %>% 
-  select(Code, Origin, `0<.L.<=0.5000000`, )
+<!-- #After D-Lab consultation, 2/9/23 -->
+<!-- ```{r} -->
+<!-- bsdata %>%  -->
+<!--   select(Code, Origin, `0<.L.<=0.5000000`, ) -->
 
 
-```
+<!-- ``` -->
 
 
 
