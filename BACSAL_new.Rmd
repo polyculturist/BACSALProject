@@ -208,24 +208,25 @@ bsdata %>%
 bsdatacat <- bsdata %>% 
   pivot_longer(L01:L11, names_to = 'Lcategory', values_to = 'LengthCat');
 
-# head(bsdatacat)
-bsdatacat %>% 
-  group_by(Code) %>% 
-  summarise(TLength = sum(`Length(cm)`))
-## this Length is actually in mm
-
-bsdata %>% 
-  select(Code, `Length(cm)`)
+#Non-normalized
+bsdatacat %>%
+  # select(Code, Origin, LengthCat, Lcategory) %>% 
+    ggplot() +
+    aes(x = Lcategory, y = 1+log(LengthCat), fill = Origin) +
+    geom_boxplot()
 
 
-# bsdatacat %>% 
-#     ggplot() +
-#     aes(x = Lcategory, y = (LengthCat/), fill = Origin) +
-#     geom_boxplot() 
+#Normalized by Total Length
+bsdatacat %>%
+  select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
+  mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
+    ggplot() +
+    aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
+    geom_boxplot()
+#Note: graphic looks weird. Can NormaLCat be transformed by something other than log?
 
 
 # Box-Cox plot might be helpful!
-#Note: Perhaps normalizing by each Code's total length to help obtain more comparable values (ie, what PERCENTAGE of BOYD F1A has invested in thin roots, L01)
 ```
 
 
