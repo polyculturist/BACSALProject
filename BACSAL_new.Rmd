@@ -206,12 +206,24 @@ bsdata %>%
 
 ```{r}
 bsdatacat <- bsdata %>% 
-  pivot_longer(L01:L11, names_to = 'Lcategory', values_to = 'LengthCat')
+  pivot_longer(L01:L11, names_to = 'Lcategory', values_to = 'LengthCat');
 
+# head(bsdatacat)
 bsdatacat %>% 
-    ggplot() +
-    aes(x = Lcategory, y = log(LengthCat+1), fill = Origin) +
-    geom_boxplot() 
+  group_by(Code) %>% 
+  summarise(TLength = sum(`Length(cm)`))
+## this Length is actually in mm
+
+bsdata %>% 
+  select(Code, `Length(cm)`)
+
+
+# bsdatacat %>% 
+#     ggplot() +
+#     aes(x = Lcategory, y = (LengthCat/), fill = Origin) +
+#     geom_boxplot() 
+
+
 # Box-Cox plot might be helpful!
 #Note: Perhaps normalizing by each Code's total length to help obtain more comparable values (ie, what PERCENTAGE of BOYD F1A has invested in thin roots, L01)
 ```
