@@ -232,6 +232,19 @@ bsdatacat %>%
 
 
 
+PCA (Principal Component Analysis) - UNFINISHED
+```{r}
+##https://environmentalcomputing.net/graphics/multivariate-vis/pca/
+
+Origin <- bsdata$Origin
+
+Root_data <- bsdata[, "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)"]
+
+Root_PCA <- princomp(Root_data, cor = F)
+
+plot(Root_PCA$scores, pch = 16, col = as.factor(Origin))
+
+```
 
 
 
