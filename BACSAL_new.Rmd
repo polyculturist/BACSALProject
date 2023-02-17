@@ -9,6 +9,9 @@ output: html_document
 library(ggplot2)
 library(magrittr)
 library(tidyverse)
+library(factoextra)
+library(lme4)
+library(lmerTest)
 ```
 
 
@@ -212,13 +215,14 @@ bsdatacat <- bsdata %>%
 bsdatacat %>%
   # select(Code, Origin, LengthCat, Lcategory) %>% 
     ggplot() +
-    aes(x = Lcategory, y = 1+log(LengthCat), fill = Origin) +
+    aes(x = Lcategory, y = log(LengthCat+1), fill = Origin) +
     geom_boxplot()
 
 
 #Normalized by Total Length
 bsdatacat %>%
   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
+ # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
   mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
     ggplot() +
     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
@@ -228,6 +232,23 @@ bsdatacat %>%
 
 # Box-Cox plot might be helpful!
 ```
+
+```{r, fig.width=22, fig.height=4}
+#Normalized by Total Length
+bsdatacat %>%
+  select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
+ # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
+  mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
+    ggplot() +
+    aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
+    geom_boxplot() +
+    facet_wrap(~Lcategory, scales = 'free', ncol = 11)
+
+
+bsdatacat %>% 
+  filter(Lcategory == 'L04')
+```
+
 
 
 
@@ -245,6 +266,56 @@ Root_PCA <- princomp(Root_data, cor = F)
 plot(Root_PCA$scores, pch = 16, col = as.factor(Origin))
 
 ```
+Using PRComp
+```{r}
+#http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
+
+Origin <- bsdata$Origin
+
+bsdata_complete <- bsdata %>% 
+  filter(complete.cases(.))
+
+Root_data <- bsdata_complete %>% 
+  select('Length(cm)', "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)", 'Shoot mass (g)')
+
+cor(Root_data, use = 'complete.obs')
+
+Root_PCA <- prcomp(Root_data, scale = T) #scale = T is if they have different units
+
+fviz_eig(Root_PCA)
+
+fviz_pca_biplot(Root_PCA, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = bsdata_complete$Origin  # Individuals color
+                )
+
+?fviz_pca_biplot #help
+#dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
+#https://setosa.io/ev/principal-component-analysis/
+```
+
+LME4
+```{r}
+bsdata <- bsdata %>% 
+  rename(Length = 'Length(cm)')
+
+mod <- lmer(Length ~ Origin + Water*Nitrogen + (1 | Genotype), data = bsdata)
+
+summary(mod)
+anova(mod)
+
+
+#change genotype to parent (F2B, M1B, etc.)
+
+```
+
+
+
+
+
+
+
+
 
 
 
