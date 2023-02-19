@@ -6,6 +6,7 @@ output: html_document
 ---
 ## Loading packages
 ```{r, echo = T, message=FALSE}
+library(readr)
 library(ggplot2)
 library(magrittr)
 library(tidyverse)
@@ -17,7 +18,7 @@ library(lmerTest)
 
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
-library(readr)
+
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 head(bsdata)
 ```
