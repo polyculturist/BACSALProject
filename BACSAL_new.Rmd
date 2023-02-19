@@ -86,32 +86,36 @@ Creating histogram:
 Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
 Yaxis - root length total (log transformed?)
 Group by sites (biggest source of variance), take means, and add add error bars
-# ```{r, echo = T, results='hide'}
-# #Reorganizing root data into one data frame
-# # bsdata <- structure(list(diamclass = c('0<.L.<=0.5000000', '0.5000000<.L.<=1.0000000')), .Names = c('diamclass', 'rlength'), class = 'data.frame')
-# 
-# bsdata %>% 
-#   select(Code, Origin, Treatment, 
-#         '0<.L.<=0.5000000', 
-#         '0.5000000<.L.<=1.0000000',
-#         `RootVolume(cm3)`,
-#         `Root Mass (g)`
-#         ) %>%
-#   ggplot(aes(x = log(`Root Mass (g)`), color = Origin)) +
-#     geom_density()
-# 
-# ```
 
 Root-shoot ratio, by Nitrogen
+Note: Add stat significant differences between Low & High with ***
+Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
 ```{r, echo = T, results='show'}
 bsdata %>% 
-  select(Code, Origin, Treatment, Water, Nitrogen, `Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
+  mutate(rts = RootMassg / ShootMassg ) %>% 
   ggplot() +
-    aes(x = Origin, y = rts, fill = Nitrogen) +
-    geom_boxplot() +
+    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites to be in order of precipitation
+        y = rts, fill = Nitrogen) +
+    geom_boxplot(na.rm = T) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
-    labs(y = "Root-to-Shoot")
+    labs(y = "Root-to-Shoot Ratio", x = 'Origin, Driest > Wettest') +
+    scale_fill_discrete(labels = c("High N", "Low N"))
+
+#Checking stat_sig using unpaired t.test
+rts_test <- bsdata %>% 
+  select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
+  mutate(rts = RootMassg / ShootMassg )
+
+#Applying Welch's t-test for unpaired samples
+WTtest <- lapply(split(rts_test, factor(rts_test$Origin)), 
+      function(x)t.test (data = rts_test, rts ~ Nitrogen, paired = F))
+WTtest
+#BOYD
+#ELFR
+#COAL
+
+
 ```
 
 Root-shoot ratio, by Origin
