@@ -108,11 +108,16 @@ rts_test <- bsdata %>%
   mutate(rts = RootMassg / ShootMassg )
 
 #Applying Welch's t-test for unpaired samples
-WTtest <- lapply(split(rts_test, factor(rts_test$Origin)), 
-      function(x)t.test (data = rts_test, rts ~ Nitrogen, paired = F))
+# WTtest <- lapply(split(rts_test, factor(rts_test$Origin)), 
+#       function(x)t.test (data = rts_test, rts ~ Nitrogen, paired = F))
+# WTest <- rts_test %>% 
+#   filter()
+#   
+#   t.test(rts ~ Nitrogen, data = rts_test)
+
 WTtest
-#BOYD
-#ELFR
+#BOYD: p<0.05
+#ELFR: 
 #COAL
 
 
