@@ -18,7 +18,7 @@ library(lmerTest)
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
-head(bsdata)
+view(bsdata)
 ```
 
 ## Renaming long column names
@@ -50,39 +50,32 @@ Specific Root Length (SRL) - root length divided by root dry mass
 Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 uses units (m/g). Will use KW units.
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(Code, `Length(cm)`, `Root Mass (g)`) %>% 
-  mutate(srl = (`Length(cm)`/100)/ `Root Mass (g)`)
+  select(Code, Lengthcm, RootMassg) %>% 
+  mutate(srl = (Lengthcm/100) / RootMassg)
 ```
 Root Tissue Density (RTD) - root mass/root volume
 Note: Kramer-Walter et al. 2016 uses mg/mm^3
 
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(Code, `Root Mass (g)`, `RootVolume(cm3)`) %>% 
-  mutate(rtd = ((`Root Mass (g)`*1000)/(`RootVolume(cm3)`*1000)))
+  select(Code, RootMassg, RootVolcm3) %>% 
+  mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000)))
 ```
 
 Specific Root Area (SRA) -root area divided by dry root mass
 Note: Sun et al. 2020 uses units (cm^2 / g)
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(Code, `SurfArea(cm2)`, `Root Mass (g)`) %>% 
-  mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`)
+  select(Code, SurfAreacm2, RootMassg) %>% 
+  mutate(sra = SurfAreacm2 / RootMassg)
 ```
-<!-- Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3) -->
-<!-- ```{r, echo = T, results='hide'} -->
-<!--  bsdata %>%  -->
-<!--    select(Code, f.height, f.width1, f.width2, i.height, i.width1, i.width2) %>%  -->
-<!--    mutate(volrgr = (((f.height/10) * (f.width1/10) * (f.width2/10)) - ((i.height/10) * (i.width1/10) * (i.width2/10)))) -->
-<!-- ``` -->
 
-RGR, according to Kramer-Walter et al. 2016 (t = 35 days)
+RGRH, (relative height growth rate) according to Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
 ```{r, echo = T, results='hide'}
-bsdata %>% 
-  select(Code, i.height, f.height) %>% 
-  mutate(kwrgr = ((log(f.height)) - (log(i.height)))/35)
+bsdata %>%
+  select(Code, iHeight, fHeight) %>% 
+  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35)
 ```
-
 
 UNFINISHED WORK BELOW
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
