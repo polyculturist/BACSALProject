@@ -18,7 +18,6 @@ library(lmerTest)
 
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
-
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 head(bsdata)
 ```
