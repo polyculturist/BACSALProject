@@ -15,7 +15,6 @@ library(lme4)
 library(lmerTest)
 ```
 
-
 ## Importing BACSAL data set
 ```{r, echo=T, results = 'hide'}
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
@@ -39,15 +38,13 @@ bsdata <- bsdata %>%
 ```
 
 
-
 ## Creating & converting variables
-
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
 ```{r, echo = T, results='hide'}
 bsdata %>% 
-  select(`Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`)
+  select(RootMassg, ShootMassg) %>% 
+  mutate(rts = RootMassg / ShootMassg)
 ```
 Specific Root Length (SRL) - root length divided by root dry mass
 Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 uses units (m/g). Will use KW units.
