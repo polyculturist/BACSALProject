@@ -355,15 +355,12 @@ fviz_pca_biplot(Root_PCA,
 ?fviz_pca_biplot #help
 #dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
 #https://setosa.io/ev/principal-component-analysis/
-
 #note: this looks messy. Could we clean it up?
 ```
 
 LME4 Analysis
 ```{r, echo = T, results='show'}
-bsdata <- bsdata %>% 
-  rename(Length = 'Length(cm)')
-
+#Building the model
 mod <- lmer(Length ~ Origin + Water*Nitrogen + (1 | Genotype), data = bsdata)
 
 summary(mod)
