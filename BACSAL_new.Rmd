@@ -101,7 +101,7 @@ bsdata %>%
         y = rts, fill = Nitrogen) +
     geom_boxplot(na.rm = T) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
-    labs(y = "Root-to-Shoot Ratio", x = 'Origin, Driest > Wettest') +
+    labs(y = "Root-to-Shoot Ratio", x = "Origin, Driest > Wettest") +
     scale_fill_discrete(labels = c("High N", "Low N"))
 
 ##Trying to subset each Origin to perform Welch T Test
@@ -134,7 +134,7 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 
 Root-shoot ratio, by Origin
 ```{r, echo = T, results='show'}
-bsdata %>% 
+bsdata %>%
   select(Origin, RootMassg, ShootMassg) %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   ggplot() +
@@ -142,15 +142,19 @@ bsdata %>%
         y = rts, fill = Origin) +
     geom_boxplot(na.rm = T) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Origin") +
-    labs(y = "Root-to-Shoot Ratio")
+    labs(y = "Root-to-Shoot Ratio",
+         x = "Origin, Driest > Wettest")
 
-#One-Way ANOVA to determine statistical significance
+#Create temp df for stats tests
+origin_rts <- bsdata %>% 
+  mutate(rts = RootMassg / ShootMassg)
 
+#One-Way ANOVA to determine statistical significance + Tukey multiple pairwise-comparison
+rts.aov <- aov(rts ~ Origin, data = origin_rts)
+summary(rts.aov)
+TukeyHSD(rts.aov)
 
-
-
-
-
+#Note: From Tukey test, ELFR & COAL are NOT statistically significant from each other
 ```
 
 According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
