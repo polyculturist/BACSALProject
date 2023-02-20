@@ -182,7 +182,22 @@ TukeyHSD(sra.aov)
 
 #Note: None of the SRA's are significantly different, ELFR & COAL are very aligned
 ```
+SRA vs. KWRGR
+```{r}
+#Specific Root Area vs KW RGR
+bsdata %>% 
+  select(Code, Origin, SurfAreacm2, RootMassg, fHeight, iHeight) %>% 
+  mutate(sra = SurfAreacm2 / RootMassg) %>% 
+  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>% 
+  ggplot() +
+    aes(x = sra, y = kwrgr, color = Origin) +
+    geom_point(na.rm = T) +
+    scale_x_continuous(limits = c(0,1500)) +
+    stat_ellipse(na.rm = T) +
+    labs(y = "Relative Growth Rate",
+         x = "Specific Root Area (SRA)")
 
+```
 
 
 ```{r, echo = T, results='show'}
