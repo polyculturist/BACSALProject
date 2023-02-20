@@ -11,10 +11,13 @@ library(ggplot2)
 library(magrittr)
 library(tidyverse)
 library(ggsci)
-library(ggsignif)
 library(factoextra)
 library(lme4)
 library(lmerTest)
+library(htmltools)
+library(devtools)
+library(sciplot)
+library(Plasticity)
 ```
 
 ## Importing BACSAL data set
@@ -444,6 +447,14 @@ final_model
 #formula = rtd ~ Water + Nitrogen + (1 | Parent:Origin)
 ```
 
+For next time: plasticity via RDPI
+## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
+```{r, echo = T, results='show'}
+
+rdpi_raw <- rdpi(bsdata_complete, Origin, Lengthcm, Code)
+#???
+
+```
 
 
 
