@@ -344,18 +344,23 @@ Root_PCA <- prcomp(na.omit(Root_data), scale = T) #scale = T is if they have dif
 
 fviz_eig(Root_PCA)
 
-fviz_pca_biplot(Root_PCA, repel = TRUE,
-                col.var = "#2E9FDF", # Variables color
-                col.ind = bsdata_complete$Origin  # Individuals color
+fviz_pca_biplot(Root_PCA, 
+                repel = T, #Avoid text overlapping
+                col.ind = "black", # Individuals
+                alpha.ind = 0, #turns individuals invisible
+                addEllipses = T,
+                col.var = "#2E9FDF" # Variables color
                 )
 
 ?fviz_pca_biplot #help
 #dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
 #https://setosa.io/ev/principal-component-analysis/
+
+#note: this looks messy. Could we clean it up?
 ```
 
-LME4
-```{r}
+LME4 Analysis
+```{r, echo = T, results='show'}
 bsdata <- bsdata %>% 
   rename(Length = 'Length(cm)')
 
