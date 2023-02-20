@@ -358,19 +358,50 @@ fviz_pca_biplot(Root_PCA,
 #note: this looks messy. Could we clean it up?
 ```
 
-LME4 Analysis
+LME4 Analysis & Model Building
+
+Length
 ```{r, echo = T, results='show'}
 #Building the model
-mod <- lmer(Length ~ Origin + Water*Nitrogen + (1 | Genotype), data = bsdata)
+mod_length <- lmer(Lengthcm ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+#parents form groups within larger groups (Origin)
 
-summary(mod)
-anova(mod)
+#summary(mod)
+mod_aov <-anova(mod_length)
+#mod_aov
 
+# ## Inspect the contrast matrix for the Type III test of Product:
+# show_tests(mod_aov)$Origin
+# ## Anova-like table of random-effect terms using likelihood ratio tests:
+# ranova(mod)
+# 
+# ## F-tests of 'single term deletions' for all marginal terms:
+# drop1(mod)
 
-#change genotype to parent (F2B, M1B, etc.)
+## backward elimination of non-significant effects:
+step_result <- step(mod_length)
+# step_result
 
+final_model <- get_model(step_result)
+final_model
+
+#Length Model: Lengthcm ~ Origin + (1 | Parent:Origin)
+
+#From my (limited) understanding of the output, only Origin is having a stat signif effect on causing the variation in the model
 ```
 
+Root-to-Shoot Ratio
+```{r, echo = T, results='show'}
+mod_rts <- lmer(rts ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+
+summary(mod_rts)
+mod_aov <-anova(mod_rts)
+
+step_result <- step(mod_rts)
+
+final_model <- get_model(step_result)
+final_model
+```
 
 
 
