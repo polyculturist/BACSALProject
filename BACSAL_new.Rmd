@@ -115,7 +115,7 @@ rts_test <- bsdata %>%
 #   
 #   t.test(rts ~ Nitrogen, data = rts_test)
 
-WTtest
+#WTtest
 #BOYD: p<0.05
 #ELFR: 
 #COAL
