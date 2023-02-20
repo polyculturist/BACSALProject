@@ -158,18 +158,33 @@ TukeyHSD(rts.aov)
 ```
 
 According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
-Relative Growth Rate, Aboveground (RGR) aka volumetric root data (delta: cm^3)
 ```{r, echo = T, results='show'}
-#Root volume vs. specific root area (sra)
+#Specific Root Area by Origin
 bsdata %>% 
-  select(Code, Origin, `SurfArea(cm2)`, Origin, `Root Mass (g)`, `RootVolume(cm3)`) %>% 
-  mutate(sra = `SurfArea(cm2)` / `Root Mass (g)`) %>% 
+  select(Code, Origin, SurfAreacm2, RootMassg) %>% 
+  mutate(sra = SurfAreacm2 / RootMassg) %>% 
   ggplot() +
-    aes(x = sra, y = `RootVolume(cm3)`, color = Origin) +
-    geom_point(na.rm = T) +
-    scale_x_continuous(limits = c(0,1800)) +
-    scale_y_continuous(limits = c(0,36))
+    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')),
+        y = sra, fill = Origin) +
+    geom_boxplot(na.rm = T) +
+    scale_y_continuous(limits = c(0,1500)) +
+    labs(y = "Specific Root Area (SRA) ",
+         x = "Origin, Driest > Wettest")
+
+#Create temp df for stats tests
+origin_sra <- bsdata %>% 
+  mutate(sra = SurfAreacm2 / RootMassg)
+
+#One-Way ANOVA to determine statistical significance + Tukey multiple pairwise-comparison
+sra.aov <- aov(sra ~ Origin, data = origin_sra)
+summary(sra.aov)
+TukeyHSD(sra.aov)
+
+#Note: None of the SRA's are significantly different, ELFR & COAL are very aligned
 ```
+
+
+
 ```{r, echo = T, results='show'}
 #RGR vs. root diameter
 bsdata %>% 
