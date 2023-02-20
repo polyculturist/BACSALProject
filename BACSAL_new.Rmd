@@ -401,12 +401,48 @@ step_result <- step(mod_rts)
 
 final_model <- get_model(step_result)
 final_model
+#formula = rts ~ Origin + Nitrogen
 ```
 
+RGR
+```{r, echo = T, results='show'}
+mod_rgr <- lmer(kwrgr ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
 
+summary(mod_rgr)
+mod_aov <-anova(mod_rgr)
 
+step_result <- step(mod_rgr)
 
+final_model <- get_model(step_result)
+final_model
+#formula = kwrgr ~ Origin + Water * Nitrogen + (1 | Parent:Origin)
+```
+SRL
+```{r, echo = T, results='show'}
+mod_srl <- lmer(srl ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
 
+summary(mod_srl)
+mod_aov <-anova(mod_srl)
+
+step_result <- step(mod_srl)
+
+final_model <- get_model(step_result)
+final_model
+#formula = srl ~ Origin + Water * Nitrogen + (1 | Parent:Origin)
+```
+RTD
+```{r, echo = T, results='show'}
+mod_rtd <- lmer(rtd ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+
+summary(mod_rtd)
+mod_aov <-anova(mod_rtd)
+
+step_result <- step(mod_rtd)
+
+final_model <- get_model(step_result)
+final_model
+#formula = rtd ~ Water + Nitrogen + (1 | Parent:Origin)
+```
 
 
 
