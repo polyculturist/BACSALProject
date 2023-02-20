@@ -10,6 +10,8 @@ library(readr)
 library(ggplot2)
 library(magrittr)
 library(tidyverse)
+library(ggsci)
+library(ggsignif)
 library(factoextra)
 library(lme4)
 library(lmerTest)
@@ -95,44 +97,60 @@ bsdata %>%
   select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
   mutate(rts = RootMassg / ShootMassg ) %>% 
   ggplot() +
-    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites to be in order of precipitation
+    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites
         y = rts, fill = Nitrogen) +
     geom_boxplot(na.rm = T) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
     labs(y = "Root-to-Shoot Ratio", x = 'Origin, Driest > Wettest') +
     scale_fill_discrete(labels = c("High N", "Low N"))
 
-#Checking stat_sig using unpaired t.test
-rts_test <- bsdata %>% 
-  select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
-  mutate(rts = RootMassg / ShootMassg )
+##Trying to subset each Origin to perform Welch T Test
+#BOYD
+boyd_rts <- bsdata %>% 
+  mutate(rts = RootMassg / ShootMassg) %>% 
+  subset(Origin == "BOYD")
 
-#Applying Welch's t-test for unpaired samples
-# WTtest <- lapply(split(rts_test, factor(rts_test$Origin)), 
-#       function(x)t.test (data = rts_test, rts ~ Nitrogen, paired = F))
-# WTest <- rts_test %>% 
-#   filter()
-#   
-#   t.test(rts ~ Nitrogen, data = rts_test)
+t.test(data = boyd_rts, rts ~ Nitrogen, paired = F)
 
-#WTtest
-#BOYD: p<0.05
-#ELFR: 
+#ELFR
+elfr_rts <- bsdata %>% 
+  mutate(rts = RootMassg / ShootMassg) %>% 
+  subset(Origin == "ELFR")
+
+t.test(data = elfr_rts, rts ~ Nitrogen, paired = F)
+
 #COAL
+coal_rts <- bsdata %>% 
+  mutate(rts = RootMassg / ShootMassg) %>% 
+  subset(Origin == "COAL")
 
+t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 
+#BOYD: p<0.05, p-value = 2.531e-06, ***
+#ELFR: p<0.05, p-value = 5.808e-07, ***
+#COAL: p<0.05, p-value = 0.002649, ***
+#All ORIGIN groups are significantly different between their high and low N groups
 ```
 
 Root-shoot ratio, by Origin
 ```{r, echo = T, results='show'}
 bsdata %>% 
-  select(Origin, `Root Mass (g)`, `Shoot mass (g)`) %>% 
-  mutate(rts = `Root Mass (g)` / `Shoot mass (g)`) %>% 
+  select(Origin, RootMassg, ShootMassg) %>% 
+  mutate(rts = RootMassg / ShootMassg) %>% 
   ggplot() +
-    aes(x = Origin, y = rts, fill = Origin) +
-    geom_boxplot() +
+    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')),
+        y = rts, fill = Origin) +
+    geom_boxplot(na.rm = T) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Origin") +
-    labs(y = "Root-to-Shoot")
+    labs(y = "Root-to-Shoot Ratio")
+
+#One-Way ANOVA to determine statistical significance
+
+
+
+
+
+
 ```
 
 According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
