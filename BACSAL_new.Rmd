@@ -193,10 +193,10 @@ bsdata %>%
     aes(x = sra, y = kwrgr, color = Origin) +
     geom_point(na.rm = T) +
     scale_x_continuous(limits = c(0,1500)) +
-    stat_ellipse(na.rm = T) +
+    stat_ellipse(na.rm = T, 
+                 lwd = 1.2) +
     labs(y = "Relative Growth Rate",
          x = "Specific Root Area (SRA)")
-
 ```
 
 
