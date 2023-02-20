@@ -26,17 +26,16 @@ view(bsdata)
 ## Renaming long column names
 ```{r, echo=T, results = 'hide'}
 bsdata <- bsdata %>% 
-  rename(L01 = `0<.L.<=0.5000000`,
-         L02 = `0.5000000<.L.<=1.0000000`,
-         L03 = `1.0000000<.L.<=1.5000000`,
-         L04 = `1.5000000<.L.<=2.0000000`,
-         L05 = `1.5000000<.L.<=2.0000000`,
-         L06 = `2.0000000<.L.<=2.5000000`,
-         L07 = `2.5000000<.L.<=3.0000000`,
-         L08 = `3.0000000<.L.<=3.5000000`,
-         L09 = `3.5000000<.L.<=4.0000000`,
-         L10 = `4.0000000<.L.<=4.5000000`,
-         L11 = `.L.>4.5000000`)
+  rename(L01 = "0<.L.<=0.5000000",
+         L02 = "0.5000000<.L.<=1.0000000",
+         L03 = "1.0000000<.L.<=1.5000000",
+         L04 = "1.5000000<.L.<=2.0000000",
+         L05 = "2.0000000<.L.<=2.5000000",
+         L06 = "2.5000000<.L.<=3.0000000",
+         L07 = "3.0000000<.L.<=3.5000000",
+         L08 = "3.5000000<.L.<=4.0000000",
+         L09 = "4.0000000<.L.<=4.5000000",
+         L10 = ".L.>4.5000000")
 ```
 
 
@@ -259,35 +258,32 @@ bsdata %>%
                    lwd = 1.2) +
       labs(y = "Relative Growth Rate",
          x = "Root-to-Shoot Ratio")
-
 ```
 
 After D-Lab consultation, 2/9/23
-
 ```{r}
 bsdatacat <- bsdata %>% 
-  pivot_longer(L01:L11, names_to = 'Lcategory', values_to = 'LengthCat');
+  pivot_longer(L01:L10, names_to = 'Lcategory', values_to = 'LengthCat');
 
 #Non-normalized
 bsdatacat %>%
-  # select(Code, Origin, LengthCat, Lcategory) %>% 
     ggplot() +
     aes(x = Lcategory, y = log(LengthCat+1), fill = Origin) +
-    geom_boxplot()
-
-
-#Normalized by Total Length
-bsdatacat %>%
-  select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
- # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
-  mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
-    ggplot() +
-    aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
-    geom_boxplot()
-#Note: graphic looks weird. Can NormaLCat be transformed by something other than log?
-
-
-# Box-Cox plot might be helpful!
+    geom_boxplot(na.rm = T) +##is this counting zeroes?
+    labs(y = "Root Length (log transformed)",
+         x = "Root Diameter Class")
+# 
+# #Normalized by Total Length
+# bsdatacat %>%
+#   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>%
+#  # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>%
+#   mutate(NormaLCat = LengthCat /`Length(cm)`) %>%
+#     ggplot() +
+#     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
+#     geom_boxplot()
+# #Note: graphic looks weird. Can NormaLCat be transformed by something other than log?
+# 
+# # Box-Cox plot might be helpful!
 ```
 
 ```{r, fig.width=22, fig.height=4}
