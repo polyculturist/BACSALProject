@@ -261,7 +261,7 @@ bsdata %>%
 ```
 
 After D-Lab consultation, 2/9/23
-```{r}
+```{r, echo = T, results='show'}
 bsdatacat <- bsdata %>% 
   pivot_longer(L01:L10, names_to = 'Lcategory', values_to = 'LengthCat');
 
@@ -288,52 +288,59 @@ bsdatacat %>%
 
 ```{r, fig.width=22, fig.height=4}
 #Normalized by Total Length
-bsdatacat %>%
-  select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
- # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
-  mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
-    ggplot() +
-    aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
-    geom_boxplot() +
-    facet_wrap(~Lcategory, scales = 'free', ncol = 11)
-
-
-bsdatacat %>% 
-  filter(Lcategory == 'L04')
+# bsdatacat %>%
+#   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
+#  # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
+#   mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
+#     ggplot() +
+#     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
+#     geom_boxplot() +
+#     facet_wrap(~Lcategory, scales = 'free', ncol = 11)
+# 
+# 
+# bsdatacat %>% 
+#   filter(Lcategory == 'L04')
 ```
-
-
-
 
 
 PCA (Principal Component Analysis) - UNFINISHED
-```{r}
+```{r, echo = T, results='show'}
 ##https://environmentalcomputing.net/graphics/multivariate-vis/pca/
-
-Origin <- bsdata$Origin
-
-Root_data <- bsdata[, "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)"]
-
-Root_PCA <- princomp(Root_data, cor = F)
-
-plot(Root_PCA$scores, pch = 16, col = as.factor(Origin))
+# 
+# Origin <- bsdata$Origin
+# 
+# Root_data <- bsdata[, "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)"]
+# 
+# Root_PCA <- princomp(Root_data, cor = F)
+# 
+# plot(Root_PCA$scores, pch = 16, col = as.factor(Origin))
 
 ```
+
+
 Using PRComp
-```{r}
+```{r, echo = T, results='show'}
 #http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
 
 Origin <- bsdata$Origin
 
+#Add in all created traits, remove all missing values
 bsdata_complete <- bsdata %>% 
-  filter(complete.cases(.))
+  #filter(complete.cases(.)) %>% #removes almost ALL rows! ???
+  mutate(rts = RootMassg / ShootMassg) %>% #Root-to-Shoot
+  mutate(srl = (Lengthcm/100) / RootMassg) %>% 
+  mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
+  mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
+  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
 
+#Select relevant root variables
 Root_data <- bsdata_complete %>% 
-  select('Length(cm)', "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)", 'Shoot mass (g)')
+  select(Lengthcm, RootMassg, RootVolcm3, SurfAreacm2, ShootMassg,
+         AvgDiammm, rts, srl, sra, kwrgr, rtd)
 
-cor(Root_data, use = 'complete.obs')
+#cor(Root_data, use = 'complete.obs') #checking each trait's correlation
 
-Root_PCA <- prcomp(Root_data, scale = T) #scale = T is if they have different units
+Root_PCA <- prcomp(na.omit(Root_data), scale = T) #scale = T is if they have different units, and na.omit ignores NA values
 
 fviz_eig(Root_PCA)
 
