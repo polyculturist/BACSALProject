@@ -395,7 +395,7 @@ final_model
 
 Root-to-Shoot Ratio
 ```{r, echo = T, results='show'}
-mod_rts <- lmer(rts ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+mod_rts <- lmer(rts ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_rts)
 mod_aov <-anova(mod_rts)
@@ -409,7 +409,7 @@ final_model
 
 RGR
 ```{r, echo = T, results='show'}
-mod_rgr <- lmer(kwrgr ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+mod_rgr <- lmer(kwrgr ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_rgr)
 mod_aov <-anova(mod_rgr)
@@ -422,7 +422,7 @@ final_model
 ```
 SRL
 ```{r, echo = T, results='show'}
-mod_srl <- lmer(srl ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+mod_srl <- lmer(srl ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_srl)
 mod_aov <-anova(mod_srl)
@@ -435,7 +435,7 @@ final_model
 ```
 RTD
 ```{r, echo = T, results='show'}
-mod_rtd <- lmer(rtd ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
+mod_rtd <- lmer(rtd ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_rtd)
 mod_aov <-anova(mod_rtd)
