@@ -418,7 +418,7 @@ step_result <- step(mod_rgr)
 
 final_model <- get_model(step_result)
 final_model
-#formula = kwrgr ~ Origin + Water * Nitrogen + (1 | Parent:Origin)
+#formula = kwrgr ~ Origin + Water + Nitrogen + (1 | Parent:Origin) + Water:Nitrogen
 ```
 SRL
 ```{r, echo = T, results='show'}
@@ -431,7 +431,7 @@ step_result <- step(mod_srl)
 
 final_model <- get_model(step_result)
 final_model
-#formula = srl ~ Origin + Water * Nitrogen + (1 | Parent:Origin)
+#formula = srl ~ 1
 ```
 RTD
 ```{r, echo = T, results='show'}
@@ -453,6 +453,7 @@ For next time: plasticity via RDPI
 
 rdpi_raw <- rdpi(bsdata_complete, Origin, Lengthcm, Code)
 #???
+
 
 ```
 
