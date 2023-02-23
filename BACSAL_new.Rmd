@@ -17,7 +17,7 @@ library(lmerTest)
 library(htmltools)
 library(devtools)
 library(sciplot)
-library(Plasticity)
+#library(Plasticity)
 ```
 
 ## Importing BACSAL data set
@@ -127,6 +127,12 @@ coal_rts <- bsdata %>%
   subset(Origin == "COAL")
 
 t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
+
+
+#make x-axis the aridity index - 2/22 meeting w/ Greg
+#aridity is random effect
+#run a lm (linear regression model) - 
+#rts ~ N*
 
 #BOYD: p<0.05, p-value = 2.531e-06, ***
 #ELFR: p<0.05, p-value = 5.808e-07, ***
@@ -276,6 +282,9 @@ bsdatacat %>%
     labs(y = "Root Length (log transformed)",
          x = "Root Diameter Class")
 # 
+
+#Make figure for supplement on fine:coarse root
+l
 # #Normalized by Total Length
 # bsdatacat %>%
 #   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>%
@@ -299,10 +308,7 @@ bsdatacat %>%
 #     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
 #     geom_boxplot() +
 #     facet_wrap(~Lcategory, scales = 'free', ncol = 11)
-# 
-# 
-# bsdatacat %>% 
-#   filter(Lcategory == 'L04')
+
 ```
 
 
@@ -322,16 +328,14 @@ PCA (Principal Component Analysis) - UNFINISHED
 
 
 Using PRComp
+http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
 ```{r, echo = T, results='show'}
-#http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
-
 Origin <- bsdata$Origin
 
 #Add in all created traits, remove all missing values
 bsdata_complete <- bsdata %>% 
-  #filter(complete.cases(.)) %>% #removes almost ALL rows! ???
   mutate(rts = RootMassg / ShootMassg) %>% #Root-to-Shoot
-  mutate(srl = (Lengthcm/100) / RootMassg) %>% 
+  mutate(srl = (Lengthcm/100) / RootMassg) %>% #SRL
   mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
   mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
@@ -343,10 +347,10 @@ Root_data <- bsdata_complete %>%
 
 #cor(Root_data, use = 'complete.obs') #checking each trait's correlation
 
-Root_PCA <- prcomp(na.omit(Root_data), scale = T) #scale = T is if they have different units, and na.omit ignores NA values
+Root_PCA <- prcomp(na.omit(Root_data), scale = T) 
+#scale = T is if they have different units, and na.omit ignores NA values
 
 fviz_eig(Root_PCA)
-
 fviz_pca_biplot(Root_PCA, 
                 repel = T, #Avoid text overlapping
                 col.ind = "black", # Individuals
@@ -451,7 +455,7 @@ For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
 ```{r, echo = T, results='show'}
 
-rdpi_raw <- rdpi(bsdata_complete, Origin, Lengthcm, Code)
+#rdpi_raw <- rdpi(bsdata_complete, Origin, Lengthcm, Code)
 #???
 
 
