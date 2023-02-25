@@ -351,7 +351,7 @@ bsdata_complete <- bsdata %>%
 #Select relevant root variables
 Root_data <- bsdata_complete %>% 
   select(Lengthcm, RootMassg, RootVolcm3, SurfAreacm2, ShootMassg,
-         AvgDiammm, rts, srl, sra, kwrgr, rtd)
+         AvgDiammm, rts, srl, sra, kwrgr, rtd, AIKoppen)
 
 #cor(Root_data, use = 'complete.obs') #checking each trait's correlation
 
@@ -447,7 +447,8 @@ final_model
 ```
 RTD
 ```{r, echo = T, results='show'}
-mod_rtd <- lmer(rtd ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
+mod_rtd <- lmer(rtd ~ (1 | Origin) + AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
+#added in AI Koppen
 
 summary(mod_rtd)
 mod_aov <-anova(mod_rtd)
