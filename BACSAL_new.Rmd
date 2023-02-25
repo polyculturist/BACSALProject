@@ -16,7 +16,7 @@ library(lme4)
 library(lmerTest)
 library(htmltools)
 library(devtools)
-library(sciplot)
+#library(sciplot)
 #library(Plasticity)
 ```
 
@@ -74,7 +74,7 @@ bsdata %>%
   mutate(sra = SurfAreacm2 / RootMassg)
 ```
 
-RGRH, (relative height growth rate) according to Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
+KWRGR - (relative height growth rate) according to Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
 ```{r, echo = T, results='hide'}
 bsdata %>%
   select(Code, iHeight, fHeight) %>% 
@@ -84,26 +84,34 @@ bsdata %>%
 UNFINISHED WORK BELOW
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
 Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
-Update Note: Maybe showing root histograms? ie, length? would be logarithmic, orders of magnitude are too greatly varied between <.5 mm and >4.5 mm
 
-Creating histogram: 
-Xaxis - Root diam. classification (from <0.5 mm to >4.5 mm)
-Yaxis - root length total (log transformed?)
-Group by sites (biggest source of variance), take means, and add add error bars
 
 Root-shoot ratio, by Nitrogen
 Note: Add stat significant differences between Low & High with ***
 Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
 ```{r, echo = T, results='show'}
+
+# bsdata %>% 
+#   select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
+#   mutate(rts = RootMassg / ShootMassg ) %>% 
+#   ggplot() +
+#   aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites
+#         y = rts, fill = Nitrogen) +
+#     geom_boxplot(na.rm = T) + #removes missing values
+#     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
+#     labs(y = "Root-to-Shoot Ratio", x = "Origin, Driest > Wettest") +
+#     scale_fill_discrete(labels = c("High N", "Low N"))
+
+
+#rearranging to use AIKoppen instead of Origin
 bsdata %>% 
-  select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
+  select(Code, Origin, AIKoppen, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
   mutate(rts = RootMassg / ShootMassg ) %>% 
   ggplot() +
-    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites
-        y = rts, fill = Nitrogen) +
-    geom_boxplot(na.rm = T) + #removes missing values
+  aes(x = AIKoppen, y = rts, outline = Origin, fill = Nitrogen) +
+    geom_boxplot(na.rm = T ) + #removes missing values
     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
-    labs(y = "Root-to-Shoot Ratio", x = "Origin, Driest > Wettest") +
+    labs(y = "Root-to-Shoot Ratio", x = "Koppen Aridity Index") +
     scale_fill_discrete(labels = c("High N", "Low N"))
 
 ##Trying to subset each Origin to perform Welch T Test
@@ -132,7 +140,7 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #make x-axis the aridity index - 2/22 meeting w/ Greg
 #aridity is random effect
 #run a lm (linear regression model) - 
-#rts ~ N*
+#rts ~ N*W....
 
 #BOYD: p<0.05, p-value = 2.531e-06, ***
 #ELFR: p<0.05, p-value = 5.808e-07, ***
