@@ -201,32 +201,16 @@ bsdata_complete %>%
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
 ```{r, echo = T, results='show'}
-#Specific Root Area by Origin
-bsdata %>% 
-  select(Code, Origin, SurfAreacm2, RootMassg) %>% 
-  mutate(sra = SurfAreacm2 / RootMassg) %>% 
+#Specific Root Area by AIKoppen
+bsdata_complete %>% 
   ggplot() +
-    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')),
-        y = sra, fill = Origin) +
+    aes(x = AIKoppen, y = sra, fill = Origin) +
     geom_boxplot(na.rm = T) +
     scale_y_continuous(limits = c(0,1500)) +
     labs(y = "Specific Root Area (SRA) ",
-         x = "Origin, Driest > Wettest")
+         x = "Koppen Aridity Index")
 
 #Create temp df for stats tests
 origin_sra <- bsdata %>% 
@@ -242,10 +226,7 @@ TukeyHSD(sra.aov)
 SRA vs. KWRGR
 ```{r}
 #Specific Root Area vs KW RGR
-bsdata %>% 
-  select(Code, Origin, SurfAreacm2, RootMassg, fHeight, iHeight) %>% 
-  mutate(sra = SurfAreacm2 / RootMassg) %>% 
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>% 
+bsdata_complete %>% 
   ggplot() +
     aes(x = sra, y = kwrgr, color = Origin) +
     geom_point(na.rm = T) +
@@ -259,9 +240,7 @@ bsdata %>%
 
 ```{r, echo = T, results='show'}
 #RGR vs. root diameter
-bsdata %>% 
-  select(Code, Origin, AvgDiammm, fHeight, iHeight) %>% 
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>% 
+bsdata_complete %>% 
   ggplot() +
     aes(x = AvgDiammm, y = kwrgr, color = Origin) +
     geom_jitter(na.rm = T) +
@@ -274,10 +253,7 @@ bsdata %>%
 
 ```{r, echo = T, results='show'}
 #KWRGR vs. Specific Root Length
-bsdata %>% 
-  select(Code, Origin, Lengthcm, RootMassg, fHeight, iHeight) %>% 
-  mutate(srl = (Lengthcm/100) / RootMassg) %>% 
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>%
+bsdata_complete %>% 
   ggplot() +
     aes(x = srl, y = kwrgr, color = Origin) +
     geom_point(na.rm = T) +
@@ -291,10 +267,7 @@ bsdata %>%
 
 ```{r, echo = T, results='show'}
 #KWrgr vs. RTD
-bsdata %>% 
-  select(Code, Origin, RootMassg, RootVolcm3, fHeight, iHeight) %>% 
-  mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% 
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>% 
+bsdata_complete %>% 
   ggplot() +
     aes(x = rtd, y = kwrgr, color = Origin) +
     geom_point(na.rm = T) +
@@ -305,10 +278,7 @@ bsdata %>%
 ```
 Root-to-Shoot Ratio vs. kwrgr
 ```{r, echo = T, results='show'}
-bsdata %>% 
-  select(Code, Origin, RootMassg, ShootMassg, fHeight, iHeight) %>% 
-  mutate(rts = RootMassg / ShootMassg) %>% 
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) %>% 
+bsdata_complete %>% 
   ggplot() +
       aes(x = rts, y = kwrgr, color = Origin) +
       geom_point(na.rm = T) +
@@ -330,49 +300,14 @@ bsdatacat %>%
     geom_boxplot(na.rm = T) +##is this counting zeroes?
     labs(y = "Root Length (log transformed)",
          x = "Root Diameter Class")
-# 
-
-#Make figure for supplement on fine:coarse root
-l
-# #Normalized by Total Length
-# bsdatacat %>%
-#   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>%
-#  # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>%
-#   mutate(NormaLCat = LengthCat /`Length(cm)`) %>%
-#     ggplot() +
-#     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
-#     geom_boxplot()
-# #Note: graphic looks weird. Can NormaLCat be transformed by something other than log?
-# 
 # # Box-Cox plot might be helpful!
-```
-
-```{r, fig.width=22, fig.height=4}
-#Normalized by Total Length
-# bsdatacat %>%
-#   select(Code, Origin, `Length(cm)`, LengthCat, Lcategory) %>% 
-#  # filter(Lcategory %in% c( 'L07', 'L08', 'L09')) %>% 
-#   mutate(NormaLCat = LengthCat /`Length(cm)`) %>% 
-#     ggplot() +
-#     aes(x = Lcategory, y = (NormaLCat), fill = Origin) +
-#     geom_boxplot() +
-#     facet_wrap(~Lcategory, scales = 'free', ncol = 11)
-
 ```
 
 
 PCA (Principal Component Analysis) - Using PRComp
 http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
 ```{r PCA, echo = T, results='show'}
-Origin <- bsdata$Origin
-
-#Add in all created traits, remove all missing values
-bsdata_complete <- bsdata %>% 
-  mutate(rts = RootMassg / ShootMassg) %>% #Root-to-Shoot
-  mutate(srl = (Lengthcm/100) / RootMassg) %>% #SRL
-  mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
-  mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
-  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
+Origin <- bsdata_complete$Origin
 
 #Select relevant root variables
 Root_data <- bsdata_complete %>% 
@@ -393,14 +328,13 @@ fviz_pca_biplot(Root_PCA,
                 col.var = "#2E9FDF" # Variables color
                 )
 
-?fviz_pca_biplot #help
+#?fviz_pca_biplot #help
 #dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
 #https://setosa.io/ev/principal-component-analysis/
 #note: this looks messy. Could we clean it up?
 ```
 
 LME4 Analysis & Model Building
-
 Length
 ```{r, echo = T, results='show'}
 #Building the model
@@ -488,13 +422,6 @@ final_model
 
 For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
-```{r, echo = T, results='show'}
-
-#rdpi_raw <- rdpi(bsdata_complete, Origin, Lengthcm, Code)
-#???
-
-
-```
 
 
 
