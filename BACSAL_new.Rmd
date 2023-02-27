@@ -51,7 +51,7 @@ bsdata %>%
   mutate(rts = RootMassg / ShootMassg)
 ```
 Specific Root Length (SRL) - root length divided by root dry mass
-Note: Funk et al. 2016 uses units (cm / mg), while Kramer-Walter et al. 2016 uses units (m/g). Will use KW units.
+Note: Will use KW 2016 units (m/g).
 ```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, Lengthcm, RootMassg) %>% 
