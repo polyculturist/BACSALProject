@@ -43,6 +43,16 @@ bsdata <- bsdata %>%
 
 
 ## Creating & converting variables
+```{r Calculating Trait Values, echo = T, results='hide'}
+#Add in all created traits, remove all missing values
+bsdata_complete <- bsdata %>% 
+  mutate(rts = RootMassg / ShootMassg) %>% #Root-to-Shoot
+  mutate(srl = (Lengthcm/100) / RootMassg) %>% #SRL
+  mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
+  mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
+  mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
+```
+
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
 ```{r, echo = T, results='hide'}
@@ -59,7 +69,6 @@ bsdata %>%
 ```
 Root Tissue Density (RTD) - root mass/root volume
 Note: Kramer-Walter et al. 2016 uses mg/mm^3
-
 ```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, RootMassg, RootVolcm3) %>% 
@@ -122,8 +131,14 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #COAL: p<0.05, p-value = 0.002649, ***
 #All ORIGIN groups are significantly different between their high and low N groups
 ```
-Building a lm for root-to-shoot ratio
-```{r}
+Building a linear regression model for root-to-shoot ratio
+```{r RTS Linear Regression, echo=T, results='show'}
+#Distribution Check
+bsdata %>% 
+  ggplot() +
+    aes()
+
+
 
 ```
 
