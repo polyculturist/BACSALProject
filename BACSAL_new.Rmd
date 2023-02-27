@@ -16,6 +16,7 @@ library(lme4)
 library(lmerTest)
 library(htmltools)
 library(devtools)
+library(caret)
 #library(sciplot)
 #library(Plasticity)
 ```
@@ -51,6 +52,7 @@ bsdata_complete <- bsdata %>%
   mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
   mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
+head(bsdata_complete)
 ```
 
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
@@ -134,11 +136,61 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 Building a linear regression model for root-to-shoot ratio
 ```{r RTS Linear Regression, echo=T, results='show'}
 #Distribution Check
-bsdata %>% 
+bsdata_complete %>% 
   ggplot() +
-    aes()
+    aes(rts) +
+    geom_histogram(na.rm = T,
+                   aes(y = after_stat(density)), fill = "orange",
+                   bins = 10) +
+    geom_density(na.rm = T)
+#Not very normal - has heavy outliers (from BOYD Low N group)
+
+#Using lmer package
+mod_rts <- lmer(rts ~ AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Origin) + (1 | Parent:Origin), data = bsdata_complete)
+
+summary(mod_rts)
+mod_aov <-anova(mod_rts)
+
+step_result <- step(mod_rts)
+
+final_model <- get_model(step_result)
+final_model
+#formula = rts ~ Origin + Nitrogen
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#Dividing data into train and test set
+NoNAs <- bsdata_complete %>% 
+  drop_na(rts)
+
+index <- createDataPartition(NoNAs$rts, p=.7, list = F)
+train <- bsdata_complete[index, ]
+test <- bsdata_complete[-index, ]
+
+# Checking the dim of train
+dim(train)
+
+# Training model
+lmModel <- lm(rts ~ AIKoppen  + Water + Nitrogen + Sex , data = train) 
+#AIKoppen instead of Origin
+# Printing the model object
+print(lmModel)
+summary(lmModel)
+
+# Histogram to check the distribution of errors
+hist(lmModel$residuals, color = "grey")
+plot(lmModel)
 
 ```
 
@@ -340,24 +392,9 @@ l
 ```
 
 
-PCA (Principal Component Analysis) - UNFINISHED
-```{r, echo = T, results='show'}
-##https://environmentalcomputing.net/graphics/multivariate-vis/pca/
-# 
-# Origin <- bsdata$Origin
-# 
-# Root_data <- bsdata[, "Root Mass (g)", "RootVolume(cm3)", "SurfArea(cm2)"]
-# 
-# Root_PCA <- princomp(Root_data, cor = F)
-# 
-# plot(Root_PCA$scores, pch = 16, col = as.factor(Origin))
-
-```
-
-
-Using PRComp
+PCA (Principal Component Analysis) - Using PRComp
 http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
-```{r, echo = T, results='show'}
+```{r PCA, echo = T, results='show'}
 Origin <- bsdata$Origin
 
 #Add in all created traits, remove all missing values
