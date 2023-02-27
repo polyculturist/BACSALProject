@@ -134,7 +134,7 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #All ORIGIN groups are significantly different between their high and low N groups
 ```
 Building a linear regression model for root-to-shoot ratio
-```{r RTS Linear Regression, echo=T, results='show'}
+```{r RTS Model Selection, echo=T, results='show'}
 #Distribution Check
 bsdata_complete %>% 
   ggplot() +
@@ -146,7 +146,9 @@ bsdata_complete %>%
 #Not very normal - has heavy outliers (from BOYD Low N group)
 
 #Using lmer package
-mod_rts <- lmer(rts ~ AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Origin) + (1 | Parent:Origin), data = bsdata_complete)
+mod_rts <- lmer(rts ~ Water*Nitrogen + AIKoppen + (1 | Origin) + (1 | Parent:Origin), data = bsdata_complete)
+#Origin and Parent:Origin are random effects, not what we're looking at
+#Note: Adding in 'Sex' Variable produces a singular fit error
 
 summary(mod_rts)
 mod_aov <-anova(mod_rts)
@@ -155,21 +157,14 @@ step_result <- step(mod_rts)
 
 final_model <- get_model(step_result)
 final_model
-#formula = rts ~ Origin + Nitrogen
+#formula = rts ~ Nitrogen + AIKoppen
+
+```
 
 
 
 
-
-
-
-
-
-
-
-
-
-
+```{r RTS Linear Regression, echo=T, results='show'}
 #Dividing data into train and test set
 NoNAs <- bsdata_complete %>% 
   drop_na(rts)
