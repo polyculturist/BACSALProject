@@ -175,9 +175,9 @@ bsdata_complete %>%
 origin_rts <- bsdata_complete$rts
 
 #One-Way ANOVA to determine statistical significance + Tukey multiple pairwise-comparison
-rts.aov <- aov(rts ~ Origin, data = origin_rts)
-summary(rts.aov)
-TukeyHSD(rts.aov)
+# rts.aov <- aov(rts ~ Origin, data = origin_rts)
+# summary(rts.aov)
+# TukeyHSD(rts.aov)
 
 #Note: From Tukey test, ELFR & COAL are NOT statistically significant from each other
 ```
