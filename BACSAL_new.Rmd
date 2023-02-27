@@ -100,9 +100,7 @@ Note: Add stat significant differences between Low & High with ***
 Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
 ```{r Root-to-shoot, echo=T, results='show'}
 #plotting rts against site aridity, separated by Nitrogen
-bsdata %>% 
-  select(Code, Origin, AIKoppen, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
-  mutate(rts = RootMassg / ShootMassg ) %>% 
+bsdata_complete %>% 
   ggplot() +
   aes(x = AIKoppen, y = rts, outline = Origin, fill = Nitrogen) +
     geom_boxplot(na.rm = T ) + #removes missing values
@@ -162,52 +160,19 @@ final_model
 ```
 
 
-
-
-```{r RTS Linear Regression, echo=T, results='show'}
-#Dividing data into train and test set
-NoNAs <- bsdata_complete %>% 
-  drop_na(rts)
-
-index <- createDataPartition(NoNAs$rts, p=.7, list = F)
-train <- bsdata_complete[index, ]
-test <- bsdata_complete[-index, ]
-
-# Checking the dim of train
-dim(train)
-
-# Training model
-lmModel <- lm(rts ~ AIKoppen  + Water + Nitrogen + Sex , data = train) 
-#AIKoppen instead of Origin
-# Printing the model object
-print(lmModel)
-summary(lmModel)
-
-# Histogram to check the distribution of errors
-hist(lmModel$residuals, color = "grey")
-plot(lmModel)
-
-```
-
-
-
-
-Root-shoot ratio, by Origin
+Root-shoot ratio, by AIKoppen
 ```{r, echo = T, results='show'}
-bsdata %>%
-  select(Origin, RootMassg, ShootMassg) %>% 
-  mutate(rts = RootMassg / ShootMassg) %>% 
+bsdata_complete %>% 
   ggplot() +
-    aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')),
-        y = rts, fill = Origin) +
+    aes(x = AIKoppen, y = rts, fill = Origin) +
     geom_boxplot(na.rm = T) + #removes missing values
-    ggtitle("Root-shoot ratio, grouped by Origin") +
+    ggtitle("Root-shoot ratio") +
     labs(y = "Root-to-Shoot Ratio",
-         x = "Origin, Driest > Wettest")
+         x = "Koppen Aridity Index") +
+    scale_fill_discrete(labels = c("BOYD", "ELFR", "COAL"))
 
 #Create temp df for stats tests
-origin_rts <- bsdata %>% 
-  mutate(rts = RootMassg / ShootMassg)
+origin_rts <- bsdata_complete$rts
 
 #One-Way ANOVA to determine statistical significance + Tukey multiple pairwise-comparison
 rts.aov <- aov(rts ~ Origin, data = origin_rts)
@@ -221,7 +186,16 @@ TukeyHSD(rts.aov)
 Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
 Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
 ```{r Fine-Coarse Root Ratio,  echo = T, results='show'}
-
+bsdata_complete %>% 
+  mutate(froots = (L01 + L02 + L03 + L04)) %>% 
+  mutate(croots = (L05 + L06 + L07 + L08 + L09 + L10)) %>% 
+  mutate(fcr = froots/croots) %>% 
+  ggplot() +
+    aes(x = AIKoppen, y = log(fcr), fill = Origin) +
+    geom_boxplot(na.rm = T) +
+      ggtitle("Fine-Coarse Root Ratio") +
+        labs(y = "Fine-Coarse Root Ratio (f<=2mm<c)",
+         x = "Koppen Aridity Index")
 
 
 ```
