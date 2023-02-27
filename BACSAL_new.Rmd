@@ -5,7 +5,7 @@ date: "2023_2_6"
 output: html_document
 ---
 ## Loading packages
-```{r, echo = T, message=FALSE}
+```{r Package Library, echo=T, message=FALSE}
 library(readr)
 library(ggplot2)
 library(magrittr)
@@ -21,13 +21,13 @@ library(devtools)
 ```
 
 ## Importing BACSAL data set
-```{r, echo=T, results = 'hide'}
+```{r Data Import, echo=T, results = 'hide'}
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 view(bsdata)
 ```
 
 ## Renaming long column names
-```{r, echo=T, results = 'hide'}
+```{r Column Renaming, echo=T, results = 'hide'}
 bsdata <- bsdata %>% 
   rename(L01 = "0<.L.<=0.5000000",
          L02 = "0.5000000<.L.<=1.0000000",
@@ -67,14 +67,15 @@ bsdata %>%
 ```
 
 Specific Root Area (SRA) -root area divided by dry root mass
-Note: Sun et al. 2020 uses units (cm^2 / g)
+Note: Sun et al. 2020 uses units (cm^2/g)
 ```{r, echo = T, results='hide'}
 bsdata %>% 
   select(Code, SurfAreacm2, RootMassg) %>% 
   mutate(sra = SurfAreacm2 / RootMassg)
 ```
 
-KWRGR - (relative height growth rate) according to Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
+KWRGR - (relative height growth rate)
+Note: Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
 ```{r, echo = T, results='hide'}
 bsdata %>%
   select(Code, iHeight, fHeight) %>% 
@@ -82,28 +83,12 @@ bsdata %>%
 ```
 
 UNFINISHED WORK BELOW
-Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
-Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
-
 
 Root-shoot ratio, by Nitrogen
 Note: Add stat significant differences between Low & High with ***
 Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
-```{r, echo = T, results='show'}
-
-# bsdata %>% 
-#   select(Code, Origin, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
-#   mutate(rts = RootMassg / ShootMassg ) %>% 
-#   ggplot() +
-#   aes(x = factor(Origin, level = c('BOYD', 'ELFR', 'COAL')), #reorders sites
-#         y = rts, fill = Nitrogen) +
-#     geom_boxplot(na.rm = T) + #removes missing values
-#     ggtitle("Root-shoot ratio, grouped by Nitrogen") +
-#     labs(y = "Root-to-Shoot Ratio", x = "Origin, Driest > Wettest") +
-#     scale_fill_discrete(labels = c("High N", "Low N"))
-
-
-#rearranging to use AIKoppen instead of Origin
+```{r Root-to-shoot, echo=T, results='show'}
+#plotting rts against site aridity, separated by Nitrogen
 bsdata %>% 
   select(Code, Origin, AIKoppen, Treatment, Water, Nitrogen, RootMassg, ShootMassg) %>% 
   mutate(rts = RootMassg / ShootMassg ) %>% 
@@ -119,34 +104,31 @@ bsdata %>%
 boyd_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "BOYD")
-
 t.test(data = boyd_rts, rts ~ Nitrogen, paired = F)
+#BOYD: p<0.05, p-value = 2.531e-06, ***
 
 #ELFR
 elfr_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "ELFR")
-
 t.test(data = elfr_rts, rts ~ Nitrogen, paired = F)
+#ELFR: p<0.05, p-value = 5.808e-07, ***
 
 #COAL
 coal_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "COAL")
-
 t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
-
-
-#make x-axis the aridity index - 2/22 meeting w/ Greg
-#aridity is random effect
-#run a lm (linear regression model) - 
-#rts ~ N*W....
-
-#BOYD: p<0.05, p-value = 2.531e-06, ***
-#ELFR: p<0.05, p-value = 5.808e-07, ***
 #COAL: p<0.05, p-value = 0.002649, ***
 #All ORIGIN groups are significantly different between their high and low N groups
 ```
+Building a lm for root-to-shoot ratio
+```{r}
+
+```
+
+
+
 
 Root-shoot ratio, by Origin
 ```{r, echo = T, results='show'}
@@ -172,6 +154,29 @@ TukeyHSD(rts.aov)
 
 #Note: From Tukey test, ELFR & COAL are NOT statistically significant from each other
 ```
+
+
+Fine:Coarse Root Ratio -need to do some digging in McCormack 2015
+Note: McCormack et al. 2015 uses arbitrary 2 mm as cutoff for fine:coarse roots ratio and questions this cutoff. Blume-Werry et al. 2017 uses log transformed fine/coarse root ratio (dimensionless).
+```{r Fine-Coarse Root Ratio,  echo = T, results='show'}
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 According to Funk et al. 2017, a soft trait like SLA "can explain a large portion of the variation in RGR across a large range of herbaceous and woody plant species". can SRA (specific root area) do the same for root volume?
 ```{r, echo = T, results='show'}
