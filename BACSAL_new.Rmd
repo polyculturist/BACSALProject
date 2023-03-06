@@ -352,7 +352,7 @@ fviz_pca_biplot(Root_PCA,
                 addEllipses = T,
                 col.var = "#2E9FDF" # Variables color
                 ) +
-  ylim(-4.5,6)
+  ylim(-4.5,6.5)
 
 var <- get_pca_var(Root_PCA)
 var$contrib
@@ -365,7 +365,7 @@ var$contrib
 
 LME4 Analysis & Model Building
 Length
-```{r, echo = T, results='show'}
+```{r Model Selection, echo = T, results='show'}
 #Building the model
 mod_length <- lmer(Lengthcm ~ Origin + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete)
 #parents form groups within larger groups (Origin)
@@ -448,6 +448,32 @@ final_model <- get_model(step_result)
 final_model
 #formula = rtd ~ Water + Nitrogen + (1 | Parent:Origin)
 ```
+
+
+```{r MANOVA, echo = T, results ='show'}
+#Matrix of response variables
+Y <- as.matrix(bsdata_complete[, c("rtd", "rts", "srl", "kwrgr",  "sra", "Lengthcm", "RootMassg", "ShootMassg", "RootVolcm3", "SurfAreacm2", "AvgDiammm")])
+
+#Fit MANOVA model with Independent Factors
+fit <- manova(Y ~ Nitrogen*Water + AIKoppen + Sex, 
+              data = bsdata_complete)
+summary(fit)
+#Note: N, AIKoppen, and Sex all have statsig p-values
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
