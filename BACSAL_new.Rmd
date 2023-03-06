@@ -27,6 +27,7 @@ bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
 view(bsdata)
 ```
 
+
 ## Renaming long column names
 ```{r Column Renaming, echo=T, results = 'hide'}
 bsdata <- bsdata %>% 
@@ -54,6 +55,19 @@ bsdata_complete <- bsdata %>%
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
 head(bsdata_complete)
 ```
+```{r Recategorization, echo = T, results = 'hide'}
+bsdata_complete$Origin <- as.factor(bsdata_complete$Origin)
+bsdata_complete$Sex <- as.factor(bsdata_complete$Sex)
+bsdata_complete$Nitrogen <- as.factor(bsdata_complete$Nitrogen)
+bsdata_complete$Water <- as.factor(bsdata_complete$Water)
+bsdata_complete$Parent <- as.factor(bsdata_complete$Parent)
+str(bsdata_complete)
+
+```
+
+
+
+
 
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
@@ -143,20 +157,24 @@ bsdata_complete %>%
     geom_density(na.rm = T)
 #Not very normal - has heavy outliers (from BOYD Low N group)
 
-#Using lmer package
+#Using lmer package, allows for mixed effects model
 mod_rts <- lmer(rts ~ Water*Nitrogen + AIKoppen + (1 | Origin) + (1 | Parent:Origin), data = bsdata_complete)
 #Origin and Parent:Origin are random effects, not what we're looking at
-#Note: Adding in 'Sex' Variable produces a singular fit error
+#Note: Adding in 'Sex' Variable produces a singular fit error, may be overleveraged (fewer degrees of freedom)
 
 summary(mod_rts)
-mod_aov <-anova(mod_rts)
+anova(mod_rts)
+
 
 step_result <- step(mod_rts)
 
 final_model <- get_model(step_result)
 final_model
+summary(final_model)
 #formula = rts ~ Nitrogen + AIKoppen
-
+plot(mod_rts)
+plot(cooks.distance(mod_rts))
+summary(final_model)$r.squared
 ```
 
 
@@ -178,7 +196,6 @@ origin_rts <- bsdata_complete$rts
 # rts.aov <- aov(rts ~ Origin, data = origin_rts)
 # summary(rts.aov)
 # TukeyHSD(rts.aov)
-
 #Note: From Tukey test, ELFR & COAL are NOT statistically significant from each other
 ```
 
@@ -191,7 +208,7 @@ bsdata_complete %>%
   mutate(croots = (L05 + L06 + L07 + L08 + L09 + L10)) %>% 
   mutate(fcr = froots/croots) %>% 
   ggplot() +
-    aes(x = AIKoppen, y = log(fcr), fill = Origin) +
+    aes(x = AIKoppen, y = log(fcr), fill = Origin, color = Nitrogen) +
     geom_boxplot(na.rm = T) +
       ggtitle("Fine-Coarse Root Ratio") +
         labs(y = "Fine-Coarse Root Ratio (f<=2mm<c)",
@@ -206,7 +223,7 @@ According to Funk et al. 2017, a soft trait like SLA "can explain a large portio
 #Specific Root Area by AIKoppen
 bsdata_complete %>% 
   ggplot() +
-    aes(x = AIKoppen, y = sra, fill = Origin) +
+    aes(x = AIKoppen, y = sra, fill = Origin, color= Nitrogen) +
     geom_boxplot(na.rm = T) +
     scale_y_continuous(limits = c(0,1500)) +
     labs(y = "Specific Root Area (SRA) ",
@@ -235,6 +252,8 @@ bsdata_complete %>%
                  lwd = 1.2) +
     labs(y = "Relative Growth Rate",
          x = "Specific Root Area (SRA)")
+#Meaning: 3 sites have similar SRA distribution, but BOYD have slower growth rate based on similar SRA, COAL has highest
+#run stats on this (BOYD has some slope)
 ```
 
 
@@ -262,6 +281,7 @@ bsdata_complete %>%
                  lwd = 1.2) +
     labs(y = "Relative Growth Rate",
          x = "Specific Root Length (m/g)")
+#High SRL signals more 'exploratory' growth patterns. In BOYD, a high SRL, more exploratory strategy is associated with higher RGR (performance), in ELFR, a low SRL more "conservative" root development is associated with higher RGR/performance. COAL has no clear relationship. 
 ```
 
 
@@ -269,23 +289,26 @@ bsdata_complete %>%
 #KWrgr vs. RTD
 bsdata_complete %>% 
   ggplot() +
-    aes(x = rtd, y = kwrgr, color = Origin) +
+    aes(x = rtd, y = kwrgr, color = Origin, shape = Nitrogen) +
     geom_point(na.rm = T) +
     stat_ellipse(na.rm = T, 
                  lwd = 1.2) +
     labs(y = "Relative Growth Rate",
          x = "Root Tissue Density (mg/mm^3)")
+#
 ```
 Root-to-Shoot Ratio vs. kwrgr
 ```{r, echo = T, results='show'}
 bsdata_complete %>% 
   ggplot() +
-      aes(x = rts, y = kwrgr, color = Origin) +
+      aes(x = rts, y = kwrgr, color = Origin, shape = Nitrogen) +
       geom_point(na.rm = T) +
       stat_ellipse(na.rm = T, 
                    lwd = 1.2) +
       labs(y = "Relative Growth Rate",
          x = "Root-to-Shoot Ratio")
+#Low N has a big effect on rts, but rts has little to no effect on RGR
+#most extreme diff in BOYD, COAL has most similar rts and rgr between treatments
 ```
 
 After D-Lab consultation, 2/9/23
@@ -300,6 +323,7 @@ bsdatacat %>%
     geom_boxplot(na.rm = T) +##is this counting zeroes?
     labs(y = "Root Length (log transformed)",
          x = "Root Diameter Class")
+#reorder to be by Aridity (BOYD>ELFR>COAL)
 # # Box-Cox plot might be helpful!
 ```
 
@@ -312,7 +336,7 @@ Origin <- bsdata_complete$Origin
 #Select relevant root variables
 Root_data <- bsdata_complete %>% 
   select(Lengthcm, RootMassg, RootVolcm3, SurfAreacm2, ShootMassg,
-         AvgDiammm, rts, srl, sra, kwrgr, rtd, AIKoppen)
+         AvgDiammm, rts, srl, sra, kwrgr, rtd)
 
 #cor(Root_data, use = 'complete.obs') #checking each trait's correlation
 
@@ -323,10 +347,15 @@ fviz_eig(Root_PCA)
 fviz_pca_biplot(Root_PCA, 
                 repel = T, #Avoid text overlapping
                 col.ind = "black", # Individuals
-                alpha.ind = 0, #turns individuals invisible
+                geom = "point",
+                alpha.ind = 1, #turns individuals invisible
                 addEllipses = T,
                 col.var = "#2E9FDF" # Variables color
-                )
+                ) +
+  ylim(-4.5,6)
+
+var <- get_pca_var(Root_PCA)
+var$contrib
 
 #?fviz_pca_biplot #help
 #dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
@@ -407,7 +436,7 @@ final_model
 ```
 RTD
 ```{r, echo = T, results='show'}
-mod_rtd <- lmer(rtd ~ (1 | Origin) + AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
+mod_rtd <- lmer(rtd ~ (1 | Origin) + AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete, family = binomial) #not for this ex., only RDPI
 #added in AI Koppen
 
 summary(mod_rtd)
