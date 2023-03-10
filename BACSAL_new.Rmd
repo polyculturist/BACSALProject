@@ -17,6 +17,7 @@ library(lmerTest)
 library(htmltools)
 library(devtools)
 library(caret)
+library(mice)
 #library(sciplot)
 #library(Plasticity)
 ```
@@ -144,7 +145,41 @@ coal_rts <- bsdata %>%
 t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #COAL: p<0.05, p-value = 0.002649, ***
 #All ORIGIN groups are significantly different between their high and low N groups
+
+
+#Mixed-effects model:
+#1 build hierarchical model (having isSingular warning when (1|Parent:Origin) random effect added)
+#ask Greg how to deal w/ overfitting
+#can keep water p-values, it'll avg across them, or can remove Water
+hmod1 <- lmer(rts ~ Nitrogen*Water + AIKoppen + (1|Sex) + (1|Origin) , data = bsdata_complete)
+hmod2 <- lmer(rts ~ Nitrogen*Water + AIKoppen + (1|Sex) + (1|Parent:Origin) , data = bsdata_complete)
+
+
+#checking for differences in model
+anova(hmod1, hmod2)
+
+library(emmeans)
+anova(hmod1)
+
+#Pairwise comparisons
+emmeans(hmod1, list(pairwise ~ Nitrogen), adjust = "tukey")
+
+
+#plotting N-Water interaction effects
+library(effects)
+library(sjPlot)
+eff.p1 <- effect("Nitrogen*Water", hmod1, KR=T)
+plot(eff.p1)
+plot(hmod1) #plotting residuals; output is NOT very random
+#look at non-normal residuals; QQ-plot
+qqnorm(resid(hmod1)) #pretty good! one outlier (check on BOYD-13, run with AND without)-if they aren't too different, it's ok! try removing it and seeing
+
 ```
+
+
+
+
+
 Building a linear regression model for root-to-shoot ratio
 ```{r RTS Model Selection, echo=T, results='show'}
 #Distribution Check
@@ -156,6 +191,7 @@ bsdata_complete %>%
                    bins = 10) +
     geom_density(na.rm = T)
 #Not very normal - has heavy outliers (from BOYD Low N group)
+#what matters is residuals are normally dist, NOT the data itself
 
 #Using lmer package, allows for mixed effects model
 mod_rts <- lmer(rts ~ Water*Nitrogen + AIKoppen + (1 | Origin) + (1 | Parent:Origin), data = bsdata_complete)
@@ -326,7 +362,7 @@ bsdatacat %>%
 #reorder to be by Aridity (BOYD>ELFR>COAL)
 # # Box-Cox plot might be helpful!
 ```
-
+Models, PCA, and MANOVA
 
 PCA (Principal Component Analysis) - Using PRComp
 http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/#compute-pca-in-r-using-prcomp
@@ -361,6 +397,9 @@ var$contrib
 #dim1 is the 'new' set of variables created. Variables are SO highly correlated, PCA collapses them into ONE variable. 
 #https://setosa.io/ev/principal-component-analysis/
 #note: this looks messy. Could we clean it up?
+#from meeting w/ Anusha, 3/10/23 - arrows pointing in same direction are 1.) correlated with each other and 2.) contributing strongly (length of arrow) to dimension 1
+#PCA works with colinearity, summarizes what's important into new variables - "What's contributing the most to the variance".
+#Look at clustered variables (dim1 = productivity?)
 ```
 
 LME4 Analysis & Model Building
@@ -396,7 +435,7 @@ final_model
 
 Root-to-Shoot Ratio
 ```{r, echo = T, results='show'}
-mod_rts <- lmer(rts ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
+mod_rts <- lmer(rts ~ (1|Origin) + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_rts)
 mod_aov <-anova(mod_rts)
@@ -410,7 +449,7 @@ final_model
 
 RGR
 ```{r, echo = T, results='show'}
-mod_rgr <- lmer(kwrgr ~ Origin + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
+mod_rgr <- lmer(kwrgr ~ (1|Origin) + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete)
 
 summary(mod_rgr)
 mod_aov <-anova(mod_rgr)
@@ -436,7 +475,7 @@ final_model
 ```
 RTD
 ```{r, echo = T, results='show'}
-mod_rtd <- lmer(rtd ~ (1 | Origin) + AIKoppen + Water*Nitrogen + (1 | Sex) + (1 | Parent:Origin), data = bsdata_complete, family = binomial) #not for this ex., only RDPI
+mod_rtd <- lmer(rtd ~ AIKoppen + Water*Nitrogen + (1 | Parent:Origin), data = bsdata_complete) #not for this ex., only RDPI
 #added in AI Koppen
 
 summary(mod_rtd)
@@ -450,7 +489,8 @@ final_model
 ```
 
 
-```{r MANOVA, echo = T, results ='show'}
+```{r MANOVA, echo = T, results ='hide'}
+#Approach #1, no random effects 
 #Matrix of response variables
 Y <- as.matrix(bsdata_complete[, c("rtd", "rts", "srl", "kwrgr",  "sra", "Lengthcm", "RootMassg", "ShootMassg", "RootVolcm3", "SurfAreacm2", "AvgDiammm")])
 
@@ -460,18 +500,17 @@ fit <- manova(Y ~ Nitrogen*Water + AIKoppen + Sex,
 summary(fit)
 #Note: N, AIKoppen, and Sex all have statsig p-values
 
+#Approach 2: Adding in Parent random effect 
+#Imputing data to estimate NA values
+# imputed <- mice(bsdata_complete, m=5, maxit = 50, method = "pmm", predictorMatrix = NULL, seed = 1398)
+
+#Fitting mixed-effects model with random effect of parent
+# fitmem <- lmer(cbind("Lengthcm", "rts") ~ 
+#                Nitrogen*Water + AIKoppen + Sex + (1|Parent),
+#                data = bsdata_complete)
+#ASK about imputing data here to deal with NA values
+
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 
 
