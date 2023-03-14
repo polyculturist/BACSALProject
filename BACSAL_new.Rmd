@@ -518,7 +518,6 @@ summary(fit)
 For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
 
-
 ```{r RDPI-RTS, echo = T, results ='hide'}
 #from source code at https://rdrr.io/github/ameztegui/Plasticity/src/R/RDPI.R
 
