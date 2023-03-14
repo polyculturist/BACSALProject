@@ -575,7 +575,7 @@ bsdata_complete$Treatment <- factor(bsdata_complete$Treatment)
 str(bsdata_complete)
 
 #rdpi <- function (data, sp, Trait, factor)
-rdpi_Lengthcm <- rdpi(bsdata_complete, Origin, kwrgr, Treatment)
+rdpi_rts <- rdpi(bsdata_complete, Origin, rts, Treatment)
 
 
 
