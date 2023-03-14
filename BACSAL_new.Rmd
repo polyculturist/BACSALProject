@@ -515,8 +515,6 @@ summary(fit)
 
 ```
 
-
-
 For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
 
@@ -524,52 +522,12 @@ For next time: plasticity via RDPI
 ```{r RDPI-RTS, echo = T, results ='hide'}
 #from source code at https://rdrr.io/github/ameztegui/Plasticity/src/R/RDPI.R
 
-#dataframe = "bsdata_complete"
+#From Aitor's email
+#data = "bsdata_complete"
 #sp = "Origin" (in lieu of species, this is my grouping)
 #trait = self-explanatory, here I use Root-to-Shoot ratio "rts"
 #factor = "Treatment"
-# 
-# rdpivol <- rdpi(bsdata_complete, Origin, RootVolcm3, Treatment) 
-# rdpivol
-# rdpirts
-# 
-# 
-# 
-#  # Load the required libraries
-#     library(agricolae)
-#     library(psych)
-#     library(dplyr)
-#     library(ggplot2)
-#     library(sciplot)
-# # Create the object (an empty data frame) that will store the results of RDPI for rts
-# RDPI <- data.frame(Origin = character(0), value = numeric(0))
-# #view(RDPI)
-# 
-# # Since we need to compute everything per Origin, we make a 'for' loop
-# levels_bsdata_complete <- levels(bsdata_complete %>% pull({{Origin}}) %>% droplevels())
-#     for (a in levels_bsdata_complete) {
-#         # subset the data for a given species
-#         data_Origin <- bsdata_complete %>% filter({{Origin}} == a)
-# 
-#         RDPI_rts <- rdpi_matrix(data_Origin, {{rts}}, {{Treatment}})
-# 
-#         RDPI_Origin <- data.frame(Origin = as.character(a),
-#                               rdpi = RDPI_rts)
-# 
-#         RDPI <- rbind(RDPI, RDPI_Origin) %>%
-#             mutate(Origin = as.factor(Origin))
-#     
-# }
-#   # A table with summary statistics for each Origin
-#     summary <- RDPI %>%
-#         group_by(Origin) %>%
-#         summarise(mean = mean(rdpi,na.rm=T),
-#                   sd = sd(rdpi,na.rm=T),
-#                   se = se(rdpi, na.rm=T))
-# 
 
-
-#From Aitor's email
 bsdata_complete$Origin <- factor(bsdata_complete$Origin)
 bsdata_complete$Treatment <- factor(bsdata_complete$Treatment)
 str(bsdata_complete)
@@ -577,7 +535,7 @@ str(bsdata_complete)
 #rdpi <- function (data, sp, Trait, factor)
 rdpi_rts <- rdpi(bsdata_complete, Origin, rts, Treatment)
 
-
+#how to deal with missingness of data?
 
 
 
