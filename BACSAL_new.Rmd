@@ -27,7 +27,7 @@ library(Plasticity)
 ## Importing BACSAL data set
 ```{r Data Import, echo=T, results = 'hide'}
 bsdata <- read_csv("complete_BACSAL_data.csv", show_col_types = F)
-view(bsdata)
+# view(bsdata)
 ```
 
 
@@ -56,7 +56,7 @@ bsdata_complete <- bsdata %>%
   mutate(sra = SurfAreacm2 / RootMassg) %>% #SRA
   mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000))) %>% #RTD
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
-head(bsdata_complete)
+# head(bsdata_complete)
 ```
 ```{r Recategorization, echo = T, results = 'hide'}
 bsdata_complete$Origin <- as.factor(bsdata_complete$Origin)
@@ -65,7 +65,7 @@ bsdata_complete$Nitrogen <- as.factor(bsdata_complete$Nitrogen)
 bsdata_complete$Water <- as.factor(bsdata_complete$Water)
 bsdata_complete$Parent <- as.factor(bsdata_complete$Parent)
 bsdata_complete$Treatment <- as.factor(bsdata_complete$Treatment)
-str(bsdata_complete)
+# str(bsdata_complete)
 
 ```
 
