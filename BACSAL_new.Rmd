@@ -58,6 +58,7 @@ bsdata_complete <- bsdata %>%
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35) #RGR
 # head(bsdata_complete)
 ```
+
 ```{r Recategorization, echo = T, results = 'hide'}
 bsdata_complete$Origin <- as.factor(bsdata_complete$Origin)
 bsdata_complete$Sex <- as.factor(bsdata_complete$Sex)
@@ -69,27 +70,23 @@ bsdata_complete$Treatment <- as.factor(bsdata_complete$Treatment)
 
 ```
 
-
-
-
-
 Root-shoot ratio (RTS) - the ratio of root dry biomass over shoot dry biomass)
 Note: Mou et al. 2013 uses rts, has no units (dimensionless)
-```{r, echo = T, results='hide'}
+```{r, echo = F, results='hide'}
 bsdata %>% 
   select(RootMassg, ShootMassg) %>% 
   mutate(rts = RootMassg / ShootMassg)
 ```
 Specific Root Length (SRL) - root length divided by root dry mass
 Note: Will use KW 2016 units (m/g).
-```{r, echo = T, results='hide'}
+```{r, echo = F, results='hide'}
 bsdata %>% 
   select(Code, Lengthcm, RootMassg) %>% 
   mutate(srl = (Lengthcm/100) / RootMassg)
 ```
 Root Tissue Density (RTD) - root mass/root volume
 Note: Kramer-Walter et al. 2016 uses mg/mm^3
-```{r, echo = T, results='hide'}
+```{r, echo = F, results='hide'}
 bsdata %>% 
   select(Code, RootMassg, RootVolcm3) %>% 
   mutate(rtd = ((RootMassg*1000)/(RootVolcm3*1000)))
@@ -97,7 +94,7 @@ bsdata %>%
 
 Specific Root Area (SRA) -root area divided by dry root mass
 Note: Sun et al. 2020 uses units (cm^2/g)
-```{r, echo = T, results='hide'}
+```{r, echo = F, results='hide'}
 bsdata %>% 
   select(Code, SurfAreacm2, RootMassg) %>% 
   mutate(sra = SurfAreacm2 / RootMassg)
@@ -105,18 +102,17 @@ bsdata %>%
 
 KWRGR - (relative height growth rate)
 Note: Kramer-Walter et al. 2016, uses (ln(f)-ln(i))/(t) (BACSAL t = 35 days)
-```{r, echo = T, results='hide'}
+```{r, echo = F, results='hide'}
 bsdata %>%
   select(Code, iHeight, fHeight) %>% 
   mutate(kwrgr = ((log(fHeight)) - (log(iHeight)))/35)
 ```
 
-UNFINISHED WORK BELOW
 
 Root-shoot ratio, by Nitrogen
 Note: Add stat significant differences between Low & High with ***
 Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
-```{r Root-to-shoot, echo=T, results='show'}
+```{r Root-to-shoot by N, echo=T, results='show'}
 #plotting rts against site aridity, separated by Nitrogen
 bsdata_complete %>% 
   ggplot() +
@@ -518,29 +514,50 @@ summary(fit)
 For next time: plasticity via RDPI
 ## https://github.com/ameztegui/Plasticity/blob/master/Plasticity_0.2.pdf
 
-```{r RDPI-RTS, echo = T, results ='hide'}
+```{r RDPI-RTS, echo = T, results ='show'}
 #from source code at https://rdrr.io/github/ameztegui/Plasticity/src/R/RDPI.R
 
 #From Aitor's email
 #data = "bsdata_complete"
-#sp = "Origin" (in lieu of species, this is my grouping)
+#sp = "Origin" (in lieu of species, this is my grouping, reordered by Aridity)
 #trait = self-explanatory, here I use Root-to-Shoot ratio "rts"
 #factor = "Treatment"
 
-bsdata_complete$Origin <- factor(bsdata_complete$Origin)
+bsdata_complete$Origin <- factor(bsdata_complete$Origin, levels = c("BOYD", "ELFR", "COAL"))
 bsdata_complete$Treatment <- factor(bsdata_complete$Treatment)
-str(bsdata_complete)
+#str(bsdata_complete)
 
 #rdpi <- function (data, sp, Trait, factor)
 rdpi_rts <- rdpi(bsdata_complete, Origin, rts, Treatment)
-
 #how to deal with missingness of data?
 
-
+```
+```{r RDPI-KWRGR, echo = T, results ='show'}
+rdpi_kwrgr <- rdpi(bsdata_complete, Origin, kwrgr, Treatment)
 
 ```
 
+```{r RDPI-SRL, echo = T, results ='show'}
+rdpi_srl <- rdpi(bsdata_complete, Origin, srl, Treatment)
+#368 rows of missing data removed! 18 SRL columns in bsdata_complete missing
+```
+```{r RDPI-RTD, echo = T, results ='show'}
+rdpi_rtd <- rdpi(bsdata_complete, Origin, rtd, Treatment)
+#368 rows of missing data removed!
+```
+```{r RDPI-SRA, echo = T, results ='show'}
+rdpi_sra <- rdpi(bsdata_complete, Origin, sra, Treatment)
 
+```
+```{r RDPI-Root Length, echo = T, results ='show'}
+rdpi_length <- rdpi(bsdata_complete, Origin, Lengthcm, Treatment)
+
+```
+
+```{r RDPI-Root Mass, echo = T, results ='show'}
+rdpi_rmass <- rdpi(bsdata_complete, Origin, RootMassg, Treatment)
+
+```
 
 
 
