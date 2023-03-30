@@ -18,6 +18,9 @@ library(htmltools)
 library(devtools)
 library(caret)
 library(mice)
+library(effects)
+library(sjPlot)
+library(emmeans)
 library(sciplot)
 library(psych)
 library(agricolae)
@@ -145,8 +148,8 @@ t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #COAL: p<0.05, p-value = 0.002649, ***
 #All ORIGIN groups are significantly different between their high and low N groups
 
-
-#Mixed-effects model:
+```
+```{r Mixed-effects model, echo=T, results='hide'}
 #1 build hierarchical model (having isSingular warning when (1|Parent:Origin) random effect added)
 #ask Greg how to deal w/ overfitting
 #can keep water p-values, it'll avg across them, or can remove Water
@@ -156,8 +159,6 @@ hmod2 <- lmer(rts ~ Nitrogen*Water + AIKoppen + (1|Sex) + (1|Parent:Origin) , da
 
 #checking for differences in model
 anova(hmod1, hmod2)
-
-library(emmeans)
 anova(hmod1)
 
 #Pairwise comparisons
@@ -165,8 +166,6 @@ emmeans(hmod1, list(pairwise ~ Nitrogen), adjust = "tukey")
 
 
 #plotting N-Water interaction effects
-library(effects)
-library(sjPlot)
 eff.p1 <- effect("Nitrogen*Water", hmod1, KR=T)
 plot(eff.p1)
 plot(hmod1) #plotting residuals; output is NOT very random
@@ -176,11 +175,8 @@ qqnorm(resid(hmod1)) #pretty good! one outlier (check on BOYD-13, run with AND w
 ```
 
 
-
-
-
 Building a linear regression model for root-to-shoot ratio
-```{r RTS Model Selection, echo=T, results='show'}
+```{r RTS Model Selection, echo=T, results='hide'}
 #Distribution Check
 bsdata_complete %>% 
   ggplot() +
@@ -324,10 +320,11 @@ bsdata_complete %>%
 #KWrgr vs. RTD
 bsdata_complete %>% 
   ggplot() +
-    aes(x = rtd, y = kwrgr, color = Origin, shape = Nitrogen) +
+    aes(x = rtd, y = kwrgr, color = Origin, linetype = Nitrogen) +
     geom_point(na.rm = T) +
     stat_ellipse(na.rm = T, 
                  lwd = 1.2) +
+    scale_linetype_manual(values = c("solid", "dotted"))
     labs(y = "Relative Growth Rate",
          x = "Root Tissue Density (mg/mm^3)")
 #
