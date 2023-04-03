@@ -10,6 +10,7 @@ library(readr)
 library(ggplot2)
 library(magrittr)
 library(tidyverse)
+library(ggpubr)
 library(ggsci)
 library(factoextra)
 library(lme4)
@@ -25,6 +26,7 @@ library(sciplot)
 library(psych)
 library(agricolae)
 library(Plasticity)
+library(wesanderson)
 ```
 
 ## Importing BACSAL data set
@@ -116,37 +118,82 @@ Root-shoot ratio, by Nitrogen
 Note: Add stat significant differences between Low & High with ***
 Will use independet t-test (unpaired) for now - http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
 ```{r Root-to-shoot by N, echo=T, results='show'}
-#plotting rts against site aridity, separated by Nitrogen
+#plotting rts against site aridity, separated by Nitrogen; stat sig using ggpubr (non-parametric tests)
 bsdata_complete %>% 
   ggplot() +
   aes(x = AIKoppen, y = rts, outline = Origin, fill = Nitrogen) +
-    geom_boxplot(na.rm = T ) + #removes missing values
-    ggtitle("Root-shoot ratio, grouped by Nitrogen") +
-    labs(y = "Root-to-Shoot Ratio", x = "Koppen Aridity Index") +
-    scale_fill_discrete(labels = c("High N", "Low N"))
+  geom_boxplot(na.rm = T) +
+  #stat_compare_means(method = "anova") +
+  stat_compare_means(na.rm = T, aes(label = ..p.signif..), method =
+                       "wilcox.test") +
+  ggtitle("Root-shoot ratio, grouped by Nitrogen") +
+  labs(y = "Root-to-Shoot Ratio", x = "Koppen Aridity Index") +
+  scale_fill_discrete(labels = c("High N", "Low N"))
 
-##Trying to subset each Origin to perform Welch T Test
+#compare_means(AIKoppen ~ rts, data = bsdata_complete, group.by = "Nitrogen")
+```
+
+```{r RTS Stats Tests & Normality checks}
+##Trying to subset each Origin
+library(nortest)
 #BOYD
 boyd_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "BOYD")
+#Checking for normal distributions of rts data
+hist(boyd_rts$rts, breaks = 10, col = "grey") #NOT normal
+qqnorm(boyd_rts$rts) #NOT normal
+ad.test(boyd_rts$rts) #normal
+shapiro.test(boyd_rts$rts) #NOT normal
+cvm.test(boyd_rts$rts) #normal
+#NOT normally distributed!
+
 t.test(data = boyd_rts, rts ~ Nitrogen, paired = F)
 #BOYD: p<0.05, p-value = 2.531e-06, ***
+
 
 #ELFR
 elfr_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "ELFR")
+#Checking for normal distributions of rts data
+hist(elfr_rts$rts, breaks = 10, col = "grey") #ALMOST normal
+qqnorm(elfr_rts$rts) #NORMAL
+ad.test(elfr_rts$rts) #NOT normal
+shapiro.test(elfr_rts$rts) #NOT normal
+cvm.test(elfr_rts$rts) #NOT normal
+#NOT NORMAL
+
 t.test(data = elfr_rts, rts ~ Nitrogen, paired = F)
 #ELFR: p<0.05, p-value = 5.808e-07, ***
+
 
 #COAL
 coal_rts <- bsdata %>% 
   mutate(rts = RootMassg / ShootMassg) %>% 
   subset(Origin == "COAL")
+#Checking for normal distributions of rts data
+hist(coal_rts$rts, breaks = 10, col = "grey") #NOT normal
+qqnorm(coal_rts$rts) #NOT NORMAL
+ad.test(coal_rts$rts) #normal
+shapiro.test(coal_rts$rts) #normal
+cvm.test(coal_rts$rts) #normal
+#NORMAL (according to tests, not graphs)
+
 t.test(data = coal_rts, rts ~ Nitrogen, paired = F)
 #COAL: p<0.05, p-value = 0.002649, ***
+
 #All ORIGIN groups are significantly different between their high and low N groups
+
+#Checking normality of ALL rts
+hist(bsdata_complete$rts, breaks = 20, col = "grey") #ALMOST normal
+qqnorm(bsdata_complete$rts) #ALMOST normal
+ad.test(bsdata_complete$rts) #NORMAL
+shapiro.test(bsdata_complete$rts) #NORMAL
+cvm.test(bsdata_complete$rts) #NORMAL
+#NORMAL distrbution
+
+#Question for Greg/Perry/Anusha - how do I check for normalcy? What about missing data? What about outliers?
 
 ```
 ```{r Mixed-effects model, echo=T, results='hide'}
