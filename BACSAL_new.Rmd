@@ -194,7 +194,6 @@ cvm.test(bsdata_complete$rts) #NORMAL
 #NORMAL distrbution
 
 #Question for Greg/Perry/Anusha - how do I check for normalcy? What about missing data? What about outliers?
-
 ```
 ```{r Mixed-effects model, echo=T, results='hide'}
 #1 build hierarchical model (having isSingular warning when (1|Parent:Origin) random effect added)
