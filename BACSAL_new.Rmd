@@ -126,9 +126,8 @@ bsdata_complete %>%
   #stat_compare_means(method = "anova") +
   stat_compare_means(na.rm = T, aes(label = ..p.signif..), method =
                        "wilcox.test") +
-  ggtitle("Root-shoot ratio, grouped by Nitrogen") +
+  ggtitle("Root-shoot ratio, grouped by Nitrogen Treatment") +
   labs(y = "Root-to-Shoot Ratio", x = "Koppen Aridity Index") +
-  scale_fill_discrete(labels = c("High N", "Low N")) +
   scale_fill_manual(values = wes_palette("Darjeeling1"), labels = c("High N", "Low N")) +
   theme_bw()
 
