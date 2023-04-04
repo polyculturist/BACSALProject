@@ -128,7 +128,9 @@ bsdata_complete %>%
                        "wilcox.test") +
   ggtitle("Root-shoot ratio, grouped by Nitrogen") +
   labs(y = "Root-to-Shoot Ratio", x = "Koppen Aridity Index") +
-  scale_fill_discrete(labels = c("High N", "Low N"))
+  scale_fill_discrete(labels = c("High N", "Low N")) +
+  scale_fill_manual(values = wes_palette("Darjeeling1"), labels = c("High N", "Low N")) +
+  theme_bw()
 
 #compare_means(AIKoppen ~ rts, data = bsdata_complete, group.by = "Nitrogen")
 ```
